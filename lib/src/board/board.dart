@@ -1,4 +1,3 @@
-import '../cell/cellState.dart';
 import '../cell/cell.dart';
 
 /**
@@ -11,7 +10,7 @@ class Board {
   List<Cell> _cells;
 
   Board(this._width, this._height) {
-    _cells = new List.generate(_width * _height, (i) => new Cell(CellState.VOID));
+    _cells = new List.generate(_width * _height, (i) => new Cell.Void());
   }
 
   get width => _width;
