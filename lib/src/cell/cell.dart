@@ -55,4 +55,15 @@ class Cell {
         break;
     }
   }
+
+  Cell clone() {
+    switch(_state) {
+      case CellState.ALIVE:
+        return new Cell.Alive(_playerID);
+      case CellState.DEAD:
+        return new Cell.Dead();
+      default:
+        return new Cell.Void();
+    }
+  }
 }

@@ -5,8 +5,8 @@ import '../cell/cell.dart';
  */
 class Board {
 
-  int _width;
-  int _height;
+  final int _width;
+  final int _height;
   List<Cell> _cells;
 
   Board(this._width, this._height) {
@@ -20,4 +20,36 @@ class Board {
   getCellByCoordinates(int x, int y) => _cells[y * _width + x];
   setCell(int i, Cell cell) => _cells[i] = cell;
   setCellByCoordinates(int x, int y, Cell cell) => _cells[y * _width + x] = cell;
+
+  List<Cell> getNeighbours(int index) {
+    List<Cell> neighbours = [];
+    [-1, 0, 1].forEach((dx) {
+      [-1, 0, 1].forEach((dy) {
+        if(dx != 0 || dy != 0) {
+          Cell neighbour = getNeighbour(index, dx, dy);
+          if(neighbour != null) {
+            neighbours.add(neighbour);
+          }
+        }
+      });
+    });
+    return neighbours;
+  }
+
+  Cell getNeighbour(int index, int dx, int dy) {
+    int x = index % 5 + dx;
+    int y = (index / 5 + dy) as int;
+    if(x >= 0 && x < 5 && y >= 0 && y < 5) {
+      return getCellByCoordinates(x, y);
+    }
+    return null;
+  }
+
+  Board clone() {
+    Board boardClone = new Board(_width, _height);
+    for(int i=0; i<_cells.length; i++) {
+      boardClone.setCell(i, getCell(i).clone());
+    }
+    return boardClone;
+  }
 }
