@@ -8,7 +8,7 @@ The last player with living cells wins the game.
 Install the [Dart SDK](https://dart.dev/get-dart).
 
 ##Run
-`dart example/conwayExample.dart`
+`dart example/conway_example.dart`
 
 ##Run Tests
 `pub run test test/`

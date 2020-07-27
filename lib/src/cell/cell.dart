@@ -1,5 +1,5 @@
-import '../exception/ConwayException.dart';
-import 'cellState.dart';
+import '../exception/conway_exception.dart';
+import 'cell_state.dart';
 
 /**
  * A Cell can be in one of the CellStates VOID, ALIVE or DEAD.
