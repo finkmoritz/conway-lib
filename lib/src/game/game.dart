@@ -44,6 +44,9 @@ class Game {
    * toggleCell is the only move in a Conway Game
    */
   toggleCell(int i) {
+    if(_gameOver) {
+      throw new ConwayException('Cannot toggle the Cell because the Game is over');
+    }
     Cell cell = _board.getCell(i);
     switch(cell.state) {
       case CellState.ALIVE:
