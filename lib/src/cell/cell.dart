@@ -66,4 +66,14 @@ class Cell {
         return new Cell.Void();
     }
   }
+
+  @override
+  bool operator ==(other) {
+    return this.state == other.state && this.playerID == other.playerID;
+  }
+
+  @override
+  String toString() {
+    return 'Cell{state:$state,playerID:$playerID}';
+  }
 }

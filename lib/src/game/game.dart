@@ -4,25 +4,27 @@ import '../exception/conway_exception.dart';
 import '../cell/cell_state.dart';
 import '../cell/cell.dart';
 import '../board/board.dart';
-import 'game_config.dart';
 
 /**
  * The Game class holds any information the user needs for playing
  * a game of Conway
  */
-class Game {
+abstract class Game {
 
-  final GameConfig _gameConfig;
   Board _board;
+  int _numberOfPlayers;
   int _currentPlayer = 0;
   bool _gameOver = false;
   int _winner;
 
-  Game(this._gameConfig) {
-    _board = new Board(_gameConfig.boardWidth, _gameConfig.boardHeight);
+  Game({numberOfPlayers = 2, width = 5, height = 5}) {
+    _numberOfPlayers = numberOfPlayers;
+    _board = new Board(width, height);
   }
 
   get board => _board;
+
+  get numberOfPlayers => _numberOfPlayers;
 
   /**
    * Returns the ID of the current Player.
@@ -72,7 +74,7 @@ class Game {
   _endTurn() {
     _iterate();
     _checkGameOver();
-    _currentPlayer = (_currentPlayer + 1) % _gameConfig.numberOfPlayers;
+    _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
   }
 
   _iterate() {
@@ -95,17 +97,16 @@ class Game {
   }
 
   int _computeDominantPlayer(List<Cell> neighbours) {
-    int nPlayers = _gameConfig.numberOfPlayers;
-    List<List<int>> playerCount = List.generate(nPlayers, (playerID) => [playerID, 0]);
+    List<List<int>> playerCount = List.generate(_numberOfPlayers, (playerID) => [playerID, 0]);
     neighbours.forEach((cell) {
       if(cell.playerID != null) {
         playerCount[cell.playerID][1]++;
       }
     });
-    playerCount.sort();
-    int maxCount = playerCount[nPlayers - 1][1];
+    playerCount.sort((a, b) { return a[1] - b[1]; });
+    int maxCount = playerCount[_numberOfPlayers - 1][1];
     while(playerCount[0][1] < maxCount) {
-      playerCount.sublist(1);
+      playerCount = playerCount.sublist(1);
     }
     List<int> dominantPlayers = List.generate(playerCount.length, (i) => playerCount[i][0]);
     if(dominantPlayers.length == 1) {
@@ -134,5 +135,20 @@ class Game {
       _gameOver = true;
       _winner = livingPlayer;
     }
+  }
+
+  @override
+  bool operator ==(other) {
+    return this.board == other.board
+        && this.numberOfPlayers == other.numberOfPlayers
+        && this.currentPlayer == other.currentPlayer
+        && this.gameOver == other.gameOver
+        && this.winner == other.winner;
+  }
+
+  @override
+  String toString() {
+    String gameString = 'Game{board:${_board.toString()}';
+    return gameString;
   }
 }

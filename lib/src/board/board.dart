@@ -28,8 +28,8 @@ class Board {
 
   List<Cell> getNeighbours(int index) {
     List<Cell> neighbours = [];
-    [-1, 0, 1].forEach((dx) {
-      [-1, 0, 1].forEach((dy) {
+    [-1, 0, 1].forEach((dy) {
+      [-1, 0, 1].forEach((dx) {
         if(dx != 0 || dy != 0) {
           Cell neighbour = getNeighbour(index, dx, dy);
           if(neighbour != null) {
@@ -42,9 +42,9 @@ class Board {
   }
 
   Cell getNeighbour(int index, int dx, int dy) {
-    int x = index % 5 + dx;
-    int y = (index / 5 + dy) as int;
-    if(x >= 0 && x < 5 && y >= 0 && y < 5) {
+    int x = index % width + dx;
+    int y = (index / width + dy).floor();
+    if(x >= 0 && x < width && y >= 0 && y < height) {
       return getCellByCoordinates(x, y);
     }
     return null;
@@ -56,5 +56,27 @@ class Board {
       boardClone.setCell(i, getCell(i).clone());
     }
     return boardClone;
+  }
+
+  @override
+  bool operator ==(other) {
+    if(this.width != other.width || this.height != other.height) {
+      return false;
+    }
+    for(int i=0; i<this._cells.length; i++) {
+      if(this.getCell(i) != other.getCell(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
+  String toString() {
+    String boardString = 'Board{width:$_width,height:$_height,cells:[';
+    _cells.forEach((cell) { boardString += '${cell.toString()},'; });
+    boardString = boardString.substring(0, boardString.length -2);
+    boardString += ']}';
+    return boardString;
   }
 }
