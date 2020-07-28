@@ -1,4 +1,5 @@
 import '../cell/cell.dart';
+import '../cell/cell_state.dart';
 
 /**
  * The Board class provides a collection of Cells
@@ -20,6 +21,10 @@ class Board {
   getCellByCoordinates(int x, int y) => _cells[y * _width + x];
   setCell(int i, Cell cell) => _cells[i] = cell;
   setCellByCoordinates(int x, int y, Cell cell) => _cells[y * _width + x] = cell;
+
+  List<Cell> getLivingCells() {
+    return _cells.where((cell) => cell.state == CellState.ALIVE).toList();
+  }
 
   List<Cell> getNeighbours(int index) {
     List<Cell> neighbours = [];

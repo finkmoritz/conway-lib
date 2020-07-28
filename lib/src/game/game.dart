@@ -6,19 +6,43 @@ import '../cell/cell.dart';
 import '../board/board.dart';
 import 'game_config.dart';
 
+/**
+ * The Game class holds any information the user needs for playing
+ * a game of Conway
+ */
 class Game {
 
   final GameConfig _gameConfig;
   Board _board;
   int _currentPlayer = 0;
+  bool _gameOver = false;
+  int _winner;
 
   Game(this._gameConfig) {
     _board = new Board(_gameConfig.boardWidth, _gameConfig.boardHeight);
   }
 
   get board => _board;
+
+  /**
+   * Returns the ID of the current Player.
+   */
   get currentPlayer => _currentPlayer;
 
+  /**
+   * Returns true if and only if at most one PLayer's Cells survived.
+   */
+  get gameOver => _gameOver;
+
+  /**
+   * Returns the winning Player's ID if and only if gameOver is true and
+   * only one Player's Cells survived.
+   */
+  get winner => _winner;
+
+  /**
+   * toggleCell is the only move in a Conway Game
+   */
   toggleCell(int i) {
     Cell cell = _board.getCell(i);
     switch(cell.state) {
@@ -34,12 +58,17 @@ class Game {
     }
     _endTurn();
   }
+
+  /**
+   * see toggleCell method
+   */
   toggleCellByCoordinates(int x, int y) {
     toggleCell(y * _board.width + x);
   }
 
   _endTurn() {
     _iterate();
+    _checkGameOver();
     _currentPlayer = (_currentPlayer + 1) % _gameConfig.numberOfPlayers;
   }
 
@@ -85,6 +114,22 @@ class Game {
         int random = (new Random()).nextInt(dominantPlayers.length);
         return dominantPlayers[random];
       }
+    }
+  }
+
+  _checkGameOver() {
+    List<Cell> livingCells = _board.getLivingCells();
+    if(livingCells.isEmpty) {
+      _gameOver = true;
+    } else {
+      int livingPlayer = livingCells[0].playerID;
+      for(int i=1; i<livingCells.length; i++) {
+        if(livingCells[i].playerID != livingPlayer) {
+          return;
+        }
+      }
+      _gameOver = true;
+      _winner = livingPlayer;
     }
   }
 }
