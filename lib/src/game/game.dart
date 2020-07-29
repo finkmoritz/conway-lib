@@ -87,7 +87,9 @@ abstract class Game {
   _endTurn() {
     _iterate();
     _checkGameOver();
-    _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
+    if(!gameOver) {
+      _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
+    }
   }
 
   _iterate() {
