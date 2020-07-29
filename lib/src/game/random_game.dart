@@ -9,9 +9,9 @@ class RandomGame extends Game {
           double fractionLivingCells = 0.5, double fractionDeadCells = 0.3})
       : super(numberOfPlayers: numberOfPlayers, width: width, height: height) {
     int totalCells = width * height;
-    int cellsPerPlayer = (fractionLivingCells * totalCells / numberOfPlayers) as int;
+    int cellsPerPlayer = (fractionLivingCells * totalCells / numberOfPlayers).floor();
     int livingCells = cellsPerPlayer * numberOfPlayers;
-    int deadCells = (fractionDeadCells * totalCells) as int;
+    int deadCells = (fractionDeadCells * totalCells).floor();
     int voidCells = totalCells - livingCells - deadCells;
     List<Cell> cells = [
       ...new List.generate(livingCells, (i) => new Cell.Alive(i % numberOfPlayers)),

@@ -43,6 +43,19 @@ abstract class Game {
   get winner => _winner;
 
   /**
+   * Returns a list of valid indices for the toggleCell method
+   */
+  List<int> getPossibleMoves() {
+    List<int> indices = [];
+    for(int i=0; i<board.numberOfCells; i++) {
+      if([CellState.ALIVE, CellState.DEAD].contains(board.getCell(i).state)) {
+        indices.add(i);
+      }
+    }
+    return indices;
+  }
+
+  /**
    * toggleCell is the only move in a Conway Game
    */
   toggleCell(int i) {

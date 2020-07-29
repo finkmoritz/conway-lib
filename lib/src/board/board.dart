@@ -16,6 +16,7 @@ class Board {
 
   get width => _width;
   get height => _height;
+  get numberOfCells => _width * _height;
 
   getCell(int i) => _cells[i];
   getCellByCoordinates(int x, int y) => _cells[y * _width + x];
