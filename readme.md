@@ -1,14 +1,14 @@
-#Conway Lib
+# Conway Lib
 
-##Overview
+## Overview
 Library that simulates Conway's Game of Life with multiple players.
 The last player with living cells wins the game.
 
-##Prerequisites
+## Prerequisites
 Install the [Dart SDK](https://dart.dev/get-dart).
 
-##Run
+## Run
 `dart example/conway_example.dart`
 
-##Run Tests
+## Run Tests
 `pub run test test/`
