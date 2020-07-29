@@ -39,4 +39,52 @@ class TestGame extends Game {
       this.board.setCell(index, new Cell.Dead());
     });
   }
+
+  /**
+   * 1 2 # 0
+   * # 2 # #
+   * 0 0 1 0
+   *   # 2 #
+   *     # #
+   * 1 1 2
+   */
+  TestGame.ThreePlayers()
+      : super(numberOfPlayers: 3, width: 4, height: 6) {
+    [3, 8, 9, 11].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [0, 10, 20, 21].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(1));
+    });
+    [1, 5, 14, 22].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(2));
+    });
+    [2, 4, 6, 7, 13, 15, 18, 19].forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
+
+  /**
+   * 1 2 2 #
+   * # # # 0
+   * 0 # # 0
+   *   # 2 0
+   *     2 #
+   * # 1 #
+   */
+  TestGame.ThreePlayersAfterToggleCell4()
+      : super(numberOfPlayers: 3, width: 4, height: 6) {
+    [7, 8, 11, 15].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [0, 21].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(1));
+    });
+    [1, 2, 14, 18].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(2));
+    });
+    [3, 4, 5, 6, 9, 10, 13, 19, 20, 22].forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
 }

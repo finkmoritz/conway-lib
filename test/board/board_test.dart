@@ -42,7 +42,7 @@ void main() {
     });
   });
 
-  group('Test neighbour methods', () {
+  group('Test neighbour methods on two player board', () {
     setUp(() async {
       _board = new TestGame.TwoPlayers().board;
     });
@@ -62,6 +62,34 @@ void main() {
       expect(neighbours[0], _board.getCell(1));
       expect(neighbours[1], _board.getCell(5));
       expect(neighbours[2], _board.getCell(6));
+    });
+  });
+
+  group('Test neighbour methods on three player board', () {
+    setUp(() async {
+      _board = new TestGame.ThreePlayers().board;
+    });
+    test('Test getNeighbour method', () {
+      expect(_board.getNeighbour(9, -1, -1), _board.getCell(4));
+      expect(_board.getNeighbour(9,  0, -1), _board.getCell(5));
+      expect(_board.getNeighbour(9,  1, -1), _board.getCell(6));
+      expect(_board.getNeighbour(9, -1,  0), _board.getCell(8));
+      expect(_board.getNeighbour(9,  1,  0), _board.getCell(10));
+      expect(_board.getNeighbour(9, -1,  1), _board.getCell(12));
+      expect(_board.getNeighbour(9,  0,  1), _board.getCell(13));
+      expect(_board.getNeighbour(9,  1,  1), _board.getCell(14));
+    });
+    test('Test getNeighbours method', () {
+      List<Cell> neighbours = _board.getNeighbours(9);
+      expect(neighbours.length, 8);
+      expect(neighbours[0], _board.getCell(4));
+      expect(neighbours[1], _board.getCell(5));
+      expect(neighbours[2], _board.getCell(6));
+      expect(neighbours[3], _board.getCell(8));
+      expect(neighbours[4], _board.getCell(10));
+      expect(neighbours[5], _board.getCell(12));
+      expect(neighbours[6], _board.getCell(13));
+      expect(neighbours[7], _board.getCell(14));
     });
   });
 }
