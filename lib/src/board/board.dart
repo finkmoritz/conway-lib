@@ -80,4 +80,26 @@ class Board {
     boardString += ']}';
     return boardString;
   }
+
+  String visualize() {
+    String s = '';
+    for (int y = 0; y < _height; y++) {
+      for (int x = 0; x < _width; x++) {
+        Cell cell = _cells[y * _width + x];
+        switch(cell.state) {
+          case CellState.ALIVE:
+            s += '${cell.playerID}\t';
+            break;
+          case CellState.DEAD:
+            s += 'x\t';
+            break;
+          default:
+            s += ' \t';
+            break;
+        }
+      }
+      s += '\n';
+    }
+    return s;
+  }
 }

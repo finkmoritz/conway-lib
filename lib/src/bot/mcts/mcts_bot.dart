@@ -16,7 +16,7 @@ class MctsBot extends Bot {
   int maxPlayoutDepth;
   Random _rng;
   
-  MctsBot(Game game, {this.iterations = 100, this.maxPlayoutDepth = 25})
+  MctsBot(Game game, {this.iterations = 10000, this.maxPlayoutDepth = 25})
       : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
   }
@@ -28,11 +28,7 @@ class MctsBot extends Bot {
   @override
   int play() {
     List<MctsNode> rankedNodes = computeRankedNodes();
-    List<MctsNode> mostVisitedNodes = rankedNodes.where(
-            (node) => node.nVisits == rankedNodes[0].nVisits
-    ).toList();
-    int index = _rng.nextInt(mostVisitedNodes.length);
-    int move = mostVisitedNodes[index].toggledCellID;
+    int move = rankedNodes[0].toggledCellID;
     game.toggleCell(move);
     return move;
   }
@@ -46,14 +42,15 @@ class MctsBot extends Bot {
     for(int i=0; i<iterations; i++) {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
       MctsNode selectedNode = path.last;
-      Game gameAtSelectedNode = _computeGameAtSelectedNode(path);
-      gameAtSelectedNode.getPossibleMoves().forEach((moveAtExpansion) {
-        Game g = _expand(selectedNode, gameAtSelectedNode, moveAtExpansion);
-        MctsNode newNode = selectedNode.childNodes.last;
-        int winner = _playout(newNode, g);
+      Game gameAtSelectedNode = _computeGameAfterPath(path);
+      gameAtSelectedNode.getPossibleMoves().forEach((move) {
+        i++;
+        MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
+        int winner = _playout(newNode, gameAtSelectedNode);
         _backpropagate(newNode, winner);
       });
     }
+    rootNode.childNodes.shuffle(_rng); //otherwise advantage for low indices
     rootNode.childNodes.sort((a, b) {return b.nVisits - a.nVisits;});
     return rootNode.childNodes;
   }
@@ -67,9 +64,6 @@ class MctsBot extends Bot {
     List<MctsNode> path = [rootNode];
     MctsNode currentNode = path[0];
     while(currentNode.childNodes.isNotEmpty) {
-      currentNode.childNodes.forEach((n) {
-
-      });
       Function(MctsNode) explorationScore = (MctsNode n) => n.getExplorationScore();
       currentNode = _getNodeWithHighestEval(currentNode.childNodes, explorationScore);
       path.add(currentNode);
@@ -78,8 +72,8 @@ class MctsBot extends Bot {
   }
 
   /**
-   * Returns the node with the highest exploration score. If multiple
-   * nodes have the same highest exploration score, one of those will
+   * Returns the node with the highest return value of the eval function.
+   * If multiple nodes have the same value, one of those will
    * be chosen at random.
    */
   MctsNode _getNodeWithHighestEval(List<MctsNode> nodes, Function(MctsNode) eval) {
@@ -103,7 +97,7 @@ class MctsBot extends Bot {
   /**
    * Compute the Game state after the given path of nodes.
    */
-  Game _computeGameAtSelectedNode(List<MctsNode> path) {
+  Game _computeGameAfterPath(List<MctsNode> path) {
     Game gameClone = game.clone();
     for(int i=1; i<path.length; i++) {
       int move = path[i].toggledCellID;
@@ -114,22 +108,24 @@ class MctsBot extends Bot {
 
   /**
    * Expand the given node with a new node representing the given move.
-   * Return the Game state at after this move.
+   * Returns this new node.
    */
-  Game _expand(MctsNode node, Game game, int move) {
-    Game gameAtChild = game.clone();
-    gameAtChild.toggleCell(move);
+  MctsNode _expand(MctsNode node, Game game, int move) {
     MctsNode newNode = new MctsNode(parentNode: node,
-        playerID: gameAtChild.currentPlayer,
+        playerID: game.currentPlayer,
         toggledCellID: move);
     node.childNodes.add(newNode);
-    return gameAtChild;
+    return newNode;
   }
 
   /**
    * Randomly playout the game from this node and return the winner.
    */
-  int _playout(MctsNode node, Game g) {
+  int _playout(MctsNode node, Game gameAtParent) {
+    Game g = gameAtParent.clone();
+    //Bring the game to the node's state:
+    g.toggleCell(node.toggledCellID);
+    //Playout randomly afterwards:
     RandomBot randomBot = new RandomBot(g);
     int i = 0;
     while(i++ < maxPlayoutDepth && !g.gameOver) {
@@ -142,14 +138,15 @@ class MctsBot extends Bot {
    * Update all parent nodes with the playout result.
    */
   _backpropagate(MctsNode node, int winner) {
+    MctsNode currentNode = node;
     do {
-      node.nVisits++;
+      currentNode.nVisits++;
       if(winner == null) {
-        node.nWins += 0.5;
+        currentNode.nWins += 0.5;
       } else if(winner == node.playerID) {
-        node.nWins += 1.0;
+        currentNode.nWins += 1.0;
       }
-      node = node.parentNode;
-    } while(node != null);
+      currentNode = currentNode.parentNode;
+    } while(currentNode != null);
   }
 }
