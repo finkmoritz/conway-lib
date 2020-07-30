@@ -9,7 +9,7 @@ import '../board/board.dart';
  * The Game class holds any information the user needs for playing
  * a game of Conway
  */
-abstract class Game {
+class Game {
 
   Board _board;
   int _numberOfPlayers;
@@ -47,6 +47,9 @@ abstract class Game {
    */
   List<int> getPossibleMoves() {
     List<int> indices = [];
+    if(gameOver) {
+      return indices;
+    }
     for(int i=0; i<board.numberOfCells; i++) {
       if([CellState.ALIVE, CellState.DEAD].contains(board.getCell(i).state)) {
         indices.add(i);
@@ -150,6 +153,15 @@ abstract class Game {
       _gameOver = true;
       _winner = livingPlayer;
     }
+  }
+
+  Game clone() {
+    Game clone = new Game(numberOfPlayers: this.numberOfPlayers);
+    clone._board = this.board.clone();
+    clone._currentPlayer = this.currentPlayer;
+    clone._gameOver = this.gameOver;
+    clone._winner = this.winner;
+    return clone;
   }
 
   @override

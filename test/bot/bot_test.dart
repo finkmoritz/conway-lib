@@ -19,4 +19,16 @@ void main() {
       expect(_game.currentPlayer, _game.gameOver ? 0 : 1);
     });
   });
+
+  group('Test MctsBot', () {
+    setUp(() async {
+      _game = new TestGame.TwoPlayers();
+      _bot = new MctsBot(_game, iterations: 10, maxPlayoutDepth: 5);
+    });
+    test('MctsBot is able to play a Game', () {
+      expect(_game.currentPlayer, 0);
+      expect(() => _bot.play(), isNot(throwsException));
+      expect(_game.currentPlayer, _game.gameOver ? 0 : 1);
+    });
+  });
 }

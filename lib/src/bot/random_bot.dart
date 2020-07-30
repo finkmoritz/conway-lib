@@ -3,6 +3,9 @@ import 'dart:math';
 import 'bot.dart';
 import '../game/game.dart';
 
+/**
+ * Bot that plays random moves
+ */
 class RandomBot extends Bot {
 
   Random _rng;
