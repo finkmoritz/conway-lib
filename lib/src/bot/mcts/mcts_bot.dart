@@ -39,16 +39,23 @@ class MctsBot extends Bot {
    */
   List<MctsNode> computeRankedNodes() {
     MctsNode rootNode = new MctsNode();
-    for(int i=0; i<iterations; i++) {
+    int i = 0;
+    while(i < iterations) {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
       MctsNode selectedNode = path.last;
       Game gameAtSelectedNode = _computeGameAfterPath(path);
-      gameAtSelectedNode.getPossibleMoves().forEach((move) {
+      List<int> possibleMoves = gameAtSelectedNode.getPossibleMoves();
+      if(possibleMoves.isEmpty) {
         i++;
-        MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
-        int winner = _playout(newNode, gameAtSelectedNode);
-        _backpropagate(newNode, winner);
-      });
+        _backpropagate(selectedNode, gameAtSelectedNode.winner);
+      } else {
+        possibleMoves.forEach((move) {
+          i++;
+          MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
+          int winner = _playout(newNode, gameAtSelectedNode);
+          _backpropagate(newNode, winner);
+        });
+      }
     }
     rootNode.childNodes.shuffle(_rng); //otherwise advantage for low indices
     rootNode.childNodes.sort((a, b) {return b.nVisits - a.nVisits;});
@@ -81,8 +88,10 @@ class MctsBot extends Bot {
     List<MctsNode> bestNodes = [];
     nodes.forEach((node) {
       double evalScore = eval(node);
-      if(evalScore >= maxScore) {
+      if(evalScore > maxScore) {
         maxScore = evalScore;
+        bestNodes = [node];
+      } else if(evalScore == maxScore) {
         bestNodes.add(node);
       }
     });
@@ -111,9 +120,7 @@ class MctsBot extends Bot {
    * Returns this new node.
    */
   MctsNode _expand(MctsNode node, Game game, int move) {
-    MctsNode newNode = new MctsNode(parentNode: node,
-        playerID: game.currentPlayer,
-        toggledCellID: move);
+    MctsNode newNode = new MctsNode(parentNode: node, toggledCellID: move);
     node.childNodes.add(newNode);
     return newNode;
   }
@@ -139,14 +146,17 @@ class MctsBot extends Bot {
    */
   _backpropagate(MctsNode node, int winner) {
     MctsNode currentNode = node;
-    do {
+    while(currentNode.parentNode != null) {
       currentNode.nVisits++;
       if(winner == null) {
         currentNode.nWins += 0.5;
-      } else if(winner == node.playerID) {
-        currentNode.nWins += 1.0;
+      } else {
+        if (winner == game.currentPlayer) {
+          currentNode.nWins += 1.0;
+        }
       }
       currentNode = currentNode.parentNode;
-    } while(currentNode != null);
+    }
+    currentNode.nVisits++;
   }
 }

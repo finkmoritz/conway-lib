@@ -1,4 +1,5 @@
 import 'package:conway/conway.dart';
+import 'package:conway/src/bot/mcts/mcts_node.dart';
 
 void main() {
   Game game = new RandomGame(numberOfPlayers: 2, width: 5,
@@ -8,6 +9,13 @@ void main() {
   do {
     print('Player #${game.currentPlayer}');
     print('Board:\n${game.board.visualize()}');
+    if(game.currentPlayer == 0) {
+      List<MctsNode> rankedNodes = mctsBot.computeRankedNodes();
+      print(rankedNodes.map((e) => [e.toggledCellID, e.nVisits, e.nWins]).toList());
+      int sum = 0;
+      rankedNodes.forEach((element) { sum += element.nVisits; });
+      print(sum);
+    }
     int move = game.currentPlayer == 0 ? mctsBot.play() : randomBot.play();
     print('Move: $move\n');
   } while(!game.gameOver);

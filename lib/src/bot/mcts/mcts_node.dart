@@ -5,7 +5,6 @@ import 'dart:math';
  */
 class MctsNode {
 
-  int playerID;
   int toggledCellID;
   double nWins = 0.0;
   int nVisits = 0;
@@ -13,7 +12,7 @@ class MctsNode {
   MctsNode parentNode;
   List<MctsNode> childNodes = [];
 
-  MctsNode({this.parentNode, this.playerID, this.toggledCellID});
+  MctsNode({this.parentNode, this.toggledCellID});
 
   double getExplorationScore() {
     double exploitation = nWins / nVisits;
