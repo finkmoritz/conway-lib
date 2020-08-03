@@ -3,6 +3,8 @@ version: 1.0.0
 description: >-
   Library that simulates Conway's Game of Life with multiple players.
   The last player with living cells wins the game.
+environment:
+  sdk: ">=2.7.0 <3.0.0"
 dev_dependencies:
   test: ^1.15.3
 
