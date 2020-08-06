@@ -91,7 +91,9 @@ class Game {
     _iterate();
     _checkGameOver();
     if(!gameOver) {
-      _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
+      do {
+        _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
+      } while(board.getLivingCellsOfPlayer(_currentPlayer).isEmpty);
     }
   }
 

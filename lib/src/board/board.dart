@@ -27,6 +27,12 @@ class Board {
     return _cells.where((cell) => cell.state == CellState.ALIVE).toList();
   }
 
+  List<Cell> getLivingCellsOfPlayer(int playerID) {
+    return _cells.where(
+            (cell) => cell.state == CellState.ALIVE && cell.playerID == playerID
+    ).toList();
+  }
+
   List<Cell> getNeighbours(int index) {
     List<Cell> neighbours = [];
     [-1, 0, 1].forEach((dy) {
