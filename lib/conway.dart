@@ -6,3 +6,4 @@ export 'src/game/random_game.dart';
 export 'src/bot/bot.dart';
 export 'src/bot/random_bot.dart';
 export 'src/bot/mcts/mcts_bot.dart';
+export 'src/bot/mcts/mcts_node.dart';
