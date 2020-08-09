@@ -38,7 +38,14 @@ class MctsBot extends Bot {
    * The first node in the list has the highest number of visits.
    */
   List<MctsNode> computeRankedNodes() {
-    MctsNode rootNode = new MctsNode();
+    return computeRankedNodesFromRootNode(new MctsNode());
+  }
+
+  /**
+   * Same as computeRankedNodes() method, but takes advantage of
+   * an already computed search tree state with root node rootNode.
+   */
+  List<MctsNode> computeRankedNodesFromRootNode(MctsNode rootNode) {
     int i = 0;
     while(i < iterations) {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
