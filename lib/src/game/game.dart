@@ -146,6 +146,9 @@ class Game {
     if(livingCells.isEmpty) {
       _gameOver = true;
     } else {
+      if(numberOfPlayers == 1) {
+        return;
+      }
       int livingPlayer = livingCells[0].playerID;
       for(int i=1; i<livingCells.length; i++) {
         if(livingCells[i].playerID != livingPlayer) {

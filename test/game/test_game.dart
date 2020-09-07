@@ -3,6 +3,38 @@ import 'package:conway/conway.dart';
 class TestGame extends Game {
 
   /**
+   *   0 0 # #
+   * 0 # #   #
+   *   # 0 # #
+   * # # # 0 #
+   * # #   0 0
+   */
+  TestGame.SinglePlayer() : super(numberOfPlayers: 1) {
+    [1, 2, 5, 12, 18, 23, 24].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [3, 4, 6, 7, 9, 11, 13, 14, 15, 16, 17, 19, 20, 21].forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
+
+  /**
+   *   0 # # #
+   * # # 0   #
+   *   # # # #
+   * # # # 0 #
+   * # #   # #
+   */
+  TestGame.SinglePlayerAfterToggleCell18() : super(numberOfPlayers: 1) {
+    [1, 7, 18].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [2, 5, 3, 4, 6, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 23, 24].forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
+
+  /**
    * # 0 0 # #
    * 0 1 1   1
    *   # 0 1 #
