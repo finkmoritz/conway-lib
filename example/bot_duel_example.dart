@@ -10,7 +10,8 @@ void main() {
     print('Player #${game.currentPlayer}');
     print('Board:\n${game.board.visualize()}');
     if(game.currentPlayer == 0) {
-      List<MctsNode> rankedNodes = mctsBot.computeRankedNodes();
+      mctsBot.iterate(numberOfIterations: 10000);
+      List<MctsNode> rankedNodes = mctsBot.getRankedNodes();
       print(rankedNodes.map((e) => [e.toggledCellID, e.nVisits, e.nWins]).toList());
       int sum = 0;
       rankedNodes.forEach((element) { sum += element.nVisits; });

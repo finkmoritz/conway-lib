@@ -11,9 +11,13 @@ void main() {
     Game game = new RandomGame(numberOfPlayers: 2, width: 5,
         height: 5, fractionLivingCells: 0.65, fractionDeadCells: 0.25);
     RandomBot randomBot = new RandomBot(game);
-    MctsBot mctsBot = new MctsBot(game, iterations: 25000, maxPlayoutDepth: 50);
+    MctsBot mctsBot = new MctsBot(game, maxPlayoutDepth: 50);
     do {
-      game.currentPlayer == 0 ? mctsBot.play() : randomBot.play();
+      if(game.currentPlayer == 0) {
+        mctsBot.play(numberOfIterations: 25000);
+      } else {
+        randomBot.play();
+      }
     } while (!game.gameOver);
     if (game.winner == null) {
       draws++;

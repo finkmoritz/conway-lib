@@ -10,8 +10,9 @@ void main() {
     print('Iteration ${i+1} of $iterations:');
     Game game = new RandomGame(numberOfPlayers: 2, width: 5,
         height: 5, fractionLivingCells: 0.65, fractionDeadCells: 0.25);
-    MctsBot mctsBot = new MctsBot(game, iterations: 25000, maxPlayoutDepth: 50);
-    int move = mctsBot.computeRankedNodes()[0].toggledCellID;
+    MctsBot mctsBot = new MctsBot(game, maxPlayoutDepth: 50);
+    mctsBot.iterate(numberOfIterations: 25000);
+    int move = mctsBot.getRankedNodes()[0].toggledCellID;
     Cell cell = game.board.getCell(move);
     switch(cell.state) {
       case CellState.ALIVE:

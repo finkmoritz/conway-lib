@@ -11,14 +11,16 @@ import '../bot.dart';
  * depth the better moves it will find but also consume more time.
  */
 class MctsBot extends Bot {
-  
-  int iterations;
+
   int maxPlayoutDepth;
+
   Random _rng;
-  
-  MctsBot(Game game, {this.iterations = 10000, this.maxPlayoutDepth = 25})
+  MctsNode rootNode;
+
+  MctsBot(Game game, {this.maxPlayoutDepth = 25})
       : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
+    _reset();
   }
 
   /**
@@ -26,28 +28,27 @@ class MctsBot extends Bot {
    * the highest number of visits is chosen to be the best move.
    */
   @override
-  int play() {
-    List<MctsNode> rankedNodes = computeRankedNodes();
+  int play({int numberOfIterations = 1000}) {
+    iterate(numberOfIterations: numberOfIterations);
+    List<MctsNode> rankedNodes = getRankedNodes();
     int move = rankedNodes[0].toggledCellID;
     game.toggleCell(move);
     return move;
   }
 
   /**
-   * Return a list of MCTS nodes sorted by the number of visits.
-   * The first node in the list has the highest number of visits.
+   * Apply the given number of iterations to develop the search tree.
+   * Per default the search tree will be reset at each invocation of
+   * this method. When reset=false, the tree will not be reset (only
+   * use this option if the game state has not been changed in between
+   * iterations!)
    */
-  List<MctsNode> computeRankedNodes() {
-    return computeRankedNodesFromRootNode(new MctsNode());
-  }
-
-  /**
-   * Same as computeRankedNodes() method, but takes advantage of
-   * an already computed search tree state with root node rootNode.
-   */
-  List<MctsNode> computeRankedNodesFromRootNode(MctsNode rootNode) {
+  void iterate({int numberOfIterations = 100, bool reset = true}) {
+    if(reset) {
+      _reset();
+    }
     int i = 0;
-    while(i < iterations) {
+    while(i < numberOfIterations) {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
       MctsNode selectedNode = path.last;
       Game gameAtSelectedNode = _computeGameAfterPath(path);
@@ -64,9 +65,24 @@ class MctsBot extends Bot {
         });
       }
     }
+  }
+
+  /**
+   * Return a list of MCTS nodes sorted by the number of visits.
+   * The first node in the list has the highest number of visits.
+   */
+  List<MctsNode> getRankedNodes() {
     rootNode.childNodes.shuffle(_rng); //otherwise advantage for low indices
     rootNode.childNodes.sort((a, b) {return b.nVisits - a.nVisits;});
     return rootNode.childNodes;
+  }
+
+  /**
+   * Resets the search tree.
+   * Call this method at least after each change of the game state.
+   */
+  void _reset() {
+    rootNode = new MctsNode();
   }
 
   /**

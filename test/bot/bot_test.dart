@@ -24,7 +24,7 @@ void main() {
   group('Test MctsBot', () {
     setUp(() async {
       _game = new TestGame.TwoPlayers();
-      _mctsBot = new MctsBot(_game, iterations: 100, maxPlayoutDepth: 10);
+      _mctsBot = new MctsBot(_game, maxPlayoutDepth: 10);
     });
     test('MctsBot is able to play a Game', () {
       expect(_game.currentPlayer, 0);
