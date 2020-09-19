@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'mcts_node.dart';
-import '../../game/game.dart';
 import '../../bot/random_bot.dart';
+import '../../game/game.dart';
 import '../bot.dart';
+import 'mcts_node.dart';
 
 /**
  * Bot that uses a Monte Carlo Tree Search (MCTS) algorithm to find
@@ -52,12 +52,12 @@ class MctsBot extends Bot {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
       MctsNode selectedNode = path.last;
       Game gameAtSelectedNode = _computeGameAfterPath(path);
-      List<int> possibleMoves = gameAtSelectedNode.getPossibleMoves();
-      if(possibleMoves.isEmpty) {
+      List<int> reasonableMoves = gameAtSelectedNode.getReasonableMoves();
+      if (reasonableMoves.isEmpty) {
         i++;
         _backpropagate(selectedNode, gameAtSelectedNode.winner);
       } else {
-        possibleMoves.forEach((move) {
+        reasonableMoves.forEach((move) {
           i++;
           MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
           int winner = _playout(newNode, gameAtSelectedNode);

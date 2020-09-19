@@ -29,37 +29,50 @@ class Board {
 
   List<Cell> getLivingCellsOfPlayer(int playerID) {
     return _cells.where(
-            (cell) => cell.state == CellState.ALIVE && cell.playerID == playerID
-    ).toList();
+            (cell) => cell.state == CellState.ALIVE && cell.playerID == playerID)
+        .toList();
   }
 
   List<Cell> getNeighbours(int index) {
     List<Cell> neighbours = [];
-    [-1, 0, 1].forEach((dy) {
-      [-1, 0, 1].forEach((dx) {
-        if(dx != 0 || dy != 0) {
-          Cell neighbour = getNeighbour(index, dx, dy);
-          if(neighbour != null) {
-            neighbours.add(neighbour);
-          }
-        }
-      });
+    getNeighbourIndices(index).forEach((nbrIndex) {
+      neighbours.add(getCell(nbrIndex));
     });
     return neighbours;
   }
 
+  List<int> getNeighbourIndices(int index) {
+    List<int> neighbourIndices = [];
+    [-1, 0, 1].forEach((dy) {
+      [-1, 0, 1].forEach((dx) {
+        if (dx != 0 || dy != 0) {
+          int i = getNeighbourIndex(index, dx, dy);
+          if (i != null) {
+            neighbourIndices.add(i);
+          }
+        }
+      });
+    });
+    return neighbourIndices;
+  }
+
   Cell getNeighbour(int index, int dx, int dy) {
+    int i = getNeighbourIndex(index, dx, dy);
+    return i == null ? null : getCell(i);
+  }
+
+  int getNeighbourIndex(int index, int dx, int dy) {
     int x = index % width + dx;
     int y = (index / width + dy).floor();
-    if(x >= 0 && x < width && y >= 0 && y < height) {
-      return getCellByCoordinates(x, y);
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+      return y * width + x;
     }
     return null;
   }
 
   Board clone() {
     Board boardClone = new Board(_width, _height);
-    for(int i=0; i<_cells.length; i++) {
+    for (int i = 0; i < _cells.length; i++) {
       boardClone.setCell(i, getCell(i).clone());
     }
     return boardClone;

@@ -21,11 +21,34 @@ void main() {
     test('getPossibleMoves', () {
       List<int> possibleMoves = _game.getPossibleMoves();
       expect(possibleMoves.length, 21);
-      expect(possibleMoves, [     1,  2,  3,  4,
-                              5,  6,  7,      9,
-                              11, 12, 13, 14,
-                              15, 16, 17, 18, 19,
-                              20, 21,     23, 24]);
+      expect(possibleMoves, [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        9,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24
+      ]);
+    });
+    test('getReasonableMoves', () {
+      _game = new TestGame.SinglePlayerSparse();
+      List<int> reasonableMoves = _game.getReasonableMoves();
+      expect(reasonableMoves.length, 18);
     });
   });
   

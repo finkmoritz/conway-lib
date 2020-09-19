@@ -1,16 +1,15 @@
 import 'dart:math';
 
-import '../exception/conway_exception.dart';
-import '../cell/cell_state.dart';
-import '../cell/cell.dart';
 import '../board/board.dart';
+import '../cell/cell.dart';
+import '../cell/cell_state.dart';
+import '../exception/conway_exception.dart';
 
 /**
  * The Game class holds any information the user needs for playing
  * a game of Conway
  */
 class Game {
-
   Board _board;
   int _numberOfPlayers;
   int _currentPlayer = 0;
@@ -43,30 +42,15 @@ class Game {
   get winner => _winner;
 
   /**
-   * Returns a list of valid indices for the toggleCell method
-   */
-  List<int> getPossibleMoves() {
-    List<int> indices = [];
-    if(gameOver) {
-      return indices;
-    }
-    for(int i=0; i<board.numberOfCells; i++) {
-      if([CellState.ALIVE, CellState.DEAD].contains(board.getCell(i).state)) {
-        indices.add(i);
-      }
-    }
-    return indices;
-  }
-
-  /**
    * toggleCell is the only move in a Conway Game
    */
   toggleCell(int i) {
-    if(_gameOver) {
-      throw new ConwayException('Cannot toggle the Cell because the Game is over');
+    if (_gameOver) {
+      throw new ConwayException(
+          'Cannot toggle the Cell because the Game is over');
     }
     Cell cell = _board.getCell(i);
-    switch(cell.state) {
+    switch (cell.state) {
       case CellState.ALIVE:
         cell.kill();
         break;
@@ -85,6 +69,69 @@ class Game {
    */
   toggleCellByCoordinates(int x, int y) {
     toggleCell(y * _board.width + x);
+  }
+
+  /**
+   * Returns a list of valid indices for the toggleCell method
+   */
+  List<int> getPossibleMoves() {
+    if (gameOver) {
+      return [];
+    }
+    List<int> possibleMoves = [];
+    for (int i = 0; i < board.numberOfCells; i++) {
+      if ([CellState.ALIVE, CellState.DEAD].contains(board
+          .getCell(i)
+          .state)) {
+        possibleMoves.add(i);
+      }
+    }
+    return possibleMoves;
+  }
+
+  /**
+   * Returns a list of reasonable indices for the toggleCell method.
+   * This method returns a subset of the moves returned by getPossibleMoves,
+   * but with all moves that do not impact the next
+   * board state directly summarized into one 'idle' move.
+   * Moves without impact are cells that only have non-living neighbours with
+   * in turn non-living neighbours.
+   */
+  List<int> getReasonableMoves() {
+    if (gameOver) {
+      return [];
+    }
+    List<int> numberOfNeighbours = [];
+    for (int i = 0; i < board.numberOfCells; i++) {
+      int nNeighboursAlive = _board
+          .getNeighbours(i)
+          .where((cell) => cell.state == CellState.ALIVE)
+          .toList()
+          .length;
+      numberOfNeighbours.add(nNeighboursAlive);
+    }
+    List<int> idleMoves = [];
+    for (int i = 0; i < board.numberOfCells; i++) {
+      if (_board
+          .getCell(i)
+          .state != CellState.VOID && numberOfNeighbours[i] == 0) {
+        List<int> neighbourIndices = board.getNeighbourIndices(i);
+        if (neighbourIndices
+            .where((nbrIndex) => numberOfNeighbours[nbrIndex] != 0)
+            .isEmpty) {
+          idleMoves.add(i);
+        }
+      }
+    }
+    List<int> reasonableMoves = getPossibleMoves();
+    if (idleMoves.length > 1) {
+      reasonableMoves.removeWhere((move) => idleMoves.contains(move));
+      idleMoves.shuffle(Random(DateTime
+          .now()
+          .millisecondsSinceEpoch));
+      reasonableMoves.add(idleMoves.first);
+    }
+    return reasonableMoves;
   }
 
   _endTurn() {

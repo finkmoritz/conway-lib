@@ -29,7 +29,25 @@ class TestGame extends Game {
     [1, 7, 18].forEach((index) {
       this.board.setCell(index, new Cell.Alive(0));
     });
-    [2, 5, 3, 4, 6, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 23, 24].forEach((index) {
+    [2, 5, 3, 4, 6, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 23, 24]
+        .forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
+
+  /**
+   *   # # # #
+   * # # #   #
+   *   # # # #
+   * # # 0 # #
+   * # #   # 0
+   */
+  TestGame.SinglePlayerSparse() : super(numberOfPlayers: 1) {
+    [17, 24].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 23]
+        .forEach((index) {
       this.board.setCell(index, new Cell.Dead());
     });
   }

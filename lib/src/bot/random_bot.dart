@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'bot.dart';
 import '../game/game.dart';
+import 'bot.dart';
 
 /**
  * Bot that plays random moves
@@ -16,8 +16,8 @@ class RandomBot extends Bot {
 
   @override
   int play() {
-    List<int> possibleMoves = game.getPossibleMoves();
-    int randomMove = possibleMoves[_rng.nextInt(possibleMoves.length)];
+    List<int> reasonableMoves = game.getReasonableMoves();
+    int randomMove = reasonableMoves[_rng.nextInt(reasonableMoves.length)];
     game.toggleCell(randomMove);
     return randomMove;
   }
