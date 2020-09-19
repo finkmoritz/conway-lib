@@ -7,14 +7,18 @@ void main() {
   int iterations = 1000;
 
   for(int i=0; i<iterations; i++) {
-    print('Iteration ${i+1} of $iterations:');
-    Game game = new RandomGame(numberOfPlayers: 2, width: 5,
-        height: 5, fractionLivingCells: 0.65, fractionDeadCells: 0.25);
+    print('Iteration ${i + 1} of $iterations:');
+    Game game = new RandomGame(
+        numberOfPlayers: 4,
+        width: 5,
+        height: 5,
+        fractionLivingCells: 0.65,
+        fractionDeadCells: 0.25);
     RandomBot randomBot = new RandomBot(game);
-    MctsBot mctsBot = new MctsBot(game, maxPlayoutDepth: 50);
+    MctsBot mctsBot = new MctsBot(game);
     do {
-      if(game.currentPlayer == 0) {
-        mctsBot.play(numberOfIterations: 25000);
+      if (game.currentPlayer == 0) {
+        mctsBot.play(numberOfIterations: 10000);
       } else {
         randomBot.play();
       }

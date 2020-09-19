@@ -73,8 +73,19 @@ class MctsBot extends Bot {
    */
   List<MctsNode> getRankedNodes() {
     rootNode.childNodes.shuffle(_rng); //otherwise advantage for low indices
-    rootNode.childNodes.sort((a, b) {return b.nVisits - a.nVisits;});
+    rootNode.childNodes.sort((a, b) {
+      if (_isInstantWin(a) || _isInstantWin(b)) {
+        return (_isInstantWin(b) ? 1 : 0) - (_isInstantWin(a) ? 1 : 0);
+      }
+      return b.nVisits - a.nVisits;
+    });
     return rootNode.childNodes;
+  }
+
+  bool _isInstantWin(MctsNode node) {
+    return node.parentNode == rootNode &&
+        node.childNodes.isEmpty &&
+        node.nWins == node.nVisits;
   }
 
   /**
@@ -168,18 +179,17 @@ class MctsBot extends Bot {
    * Update all parent nodes with the playout result.
    */
   _backpropagate(MctsNode node, int winner) {
+    bool currentPlayerWins = winner == game.currentPlayer;
     MctsNode currentNode = node;
-    while(currentNode.parentNode != null) {
+    while (currentNode != rootNode) {
       currentNode.nVisits++;
-      if(winner == null) {
+      if (winner == null) {
         currentNode.nWins += 0.5;
-      } else {
-        if (winner == game.currentPlayer) {
-          currentNode.nWins += 1.0;
-        }
+      } else if (currentPlayerWins) {
+        currentNode.nWins += 1.0;
       }
       currentNode = currentNode.parentNode;
     }
-    currentNode.nVisits++;
+    rootNode.nVisits++;
   }
 }

@@ -91,6 +91,26 @@ class TestGame extends Game {
   }
 
   /**
+   * 0 # # 1 #
+   * # # # # 1
+   * 1 # # # #
+   * # # # # 1
+   * # 1 # # 1
+   */
+  TestGame.TwoPlayersInstantWin() {
+    [0].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(0));
+    });
+    [3, 9, 10, 19, 21, 24].forEach((index) {
+      this.board.setCell(index, new Cell.Alive(1));
+    });
+    [1, 2, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 23]
+        .forEach((index) {
+      this.board.setCell(index, new Cell.Dead());
+    });
+  }
+
+  /**
    * 1 2 # 0
    * # 2 # #
    * 0 0 1 0
@@ -98,8 +118,7 @@ class TestGame extends Game {
    *     # #
    * 1 1 2
    */
-  TestGame.ThreePlayers()
-      : super(numberOfPlayers: 3, width: 4, height: 6) {
+  TestGame.ThreePlayers() : super(numberOfPlayers: 3, width: 4, height: 6) {
     [3, 8, 9, 11].forEach((index) {
       this.board.setCell(index, new Cell.Alive(0));
     });

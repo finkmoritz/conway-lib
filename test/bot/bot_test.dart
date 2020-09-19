@@ -22,14 +22,26 @@ void main() {
   });
 
   group('Test MctsBot', () {
-    setUp(() async {
+    test('MctsBot is able to play a Game', () {
       _game = new TestGame.TwoPlayers();
       _mctsBot = new MctsBot(_game, maxPlayoutDepth: 10);
-    });
-    test('MctsBot is able to play a Game', () {
       expect(_game.currentPlayer, 0);
       expect(() => _mctsBot.play(), isNot(throwsException));
       expect(_game.currentPlayer, _game.gameOver ? 0 : 1);
+    });
+    test('MctsBot always finds instantly winning move', () {
+      for (int i = 0; i < 50; i++) {
+        _game = new TestGame.TwoPlayersInstantWin();
+        _mctsBot = new MctsBot(_game, maxPlayoutDepth: 10);
+        int move = _mctsBot.play();
+        bool isWinningMove = [1, 5, 6].contains(move);
+        if (!isWinningMove) {
+          print('MctsBot played non-winning move: $move !');
+        }
+        expect(isWinningMove, true);
+        expect(_game.gameOver, true);
+        expect(_game.winner, 0);
+      }
     });
   });
 }
