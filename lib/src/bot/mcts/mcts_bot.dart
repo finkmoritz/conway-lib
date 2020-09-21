@@ -180,6 +180,8 @@ class MctsBot extends Bot {
    */
   _backpropagate(MctsNode node, int winner) {
     bool currentPlayerWins = winner == game.currentPlayer;
+    bool currentPlayerAlive =
+        game.board.getLivingCellsOfPlayer(game.currentPlayer).length > 0;
     MctsNode currentNode = node;
     while (currentNode != rootNode) {
       currentNode.nVisits++;
@@ -187,6 +189,8 @@ class MctsBot extends Bot {
         currentNode.nWins += 0.5;
       } else if (currentPlayerWins) {
         currentNode.nWins += 1.0;
+      } else if (currentPlayerAlive) {
+        currentNode.nWins += 0.25;
       }
       currentNode = currentNode.parentNode;
     }
