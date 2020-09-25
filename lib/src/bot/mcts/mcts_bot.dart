@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import 'package:conway/conway.dart';
 import 'package:conway/src/bot/mcts/playout_result.dart';
-import 'package:conway/src/bot/simple_bot.dart';
 
 import '../../game/game.dart';
 import '../bot.dart';
@@ -187,16 +187,15 @@ class MctsBot extends Bot {
     //Bring the game to the node's state:
     g.toggleCell(node.toggledCellID);
     //Playout fast and simple afterwards:
-    SimpleBot simpleBot = new SimpleBot(g);
+    Bot bot = new RandomBot(g);
     int i = 0;
     while (i++ < maxPlayoutDepth && !g.gameOver) {
-      bool stillAlive = g.board
-          .getLivingCellsOfPlayer(game.currentPlayer)
-          .length > 0;
+      bool stillAlive =
+          g.board.getLivingCellsOfPlayer(game.currentPlayer).length > 0;
       if (!stillAlive) {
         break;
       }
-      simpleBot.play();
+      bot.play();
     }
     return new PlayoutResult(
       gameOver: g.gameOver,
