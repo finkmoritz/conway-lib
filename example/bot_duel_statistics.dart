@@ -10,8 +10,8 @@ void main() {
     print('Iteration ${i + 1} of $iterations:');
     Game game = new RandomGame(
         numberOfPlayers: 4,
-        width: 5,
-        height: 5,
+        width: 10,
+        height: 10,
         fractionLivingCells: 0.65,
         fractionDeadCells: 0.25);
     RandomBot randomBot = new RandomBot(game);

@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:conway/src/bot/mcts/playout_result.dart';
+
 import '../../bot/random_bot.dart';
 import '../../game/game.dart';
 import '../bot.dart';
@@ -55,13 +57,18 @@ class MctsBot extends Bot {
       List<int> reasonableMoves = gameAtSelectedNode.getReasonableMoves();
       if (reasonableMoves.isEmpty) {
         i++;
-        _backpropagate(selectedNode, gameAtSelectedNode.winner);
+        _backpropagate(
+            selectedNode,
+            new PlayoutResult(
+              gameOver: gameAtSelectedNode.gameOver,
+              winner: gameAtSelectedNode.winner,
+            ));
       } else {
         reasonableMoves.forEach((move) {
           i++;
           MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
-          int winner = _playout(newNode, gameAtSelectedNode);
-          _backpropagate(newNode, winner);
+          PlayoutResult playoutResult = _playout(newNode, gameAtSelectedNode);
+          _backpropagate(newNode, playoutResult);
         });
       }
     }
@@ -85,7 +92,7 @@ class MctsBot extends Bot {
   bool _isInstantWin(MctsNode node) {
     return node.parentNode == rootNode &&
         node.childNodes.isEmpty &&
-        node.nWins == node.nVisits;
+        node.score == node.nVisits;
   }
 
   /**
@@ -162,35 +169,45 @@ class MctsBot extends Bot {
   /**
    * Randomly playout the game from this node and return the winner.
    */
-  int _playout(MctsNode node, Game gameAtParent) {
+  PlayoutResult _playout(MctsNode node, Game gameAtParent) {
     Game g = gameAtParent.clone();
     //Bring the game to the node's state:
     g.toggleCell(node.toggledCellID);
     //Playout randomly afterwards:
     RandomBot randomBot = new RandomBot(g);
     int i = 0;
-    while(i++ < maxPlayoutDepth && !g.gameOver) {
+    while (i++ < maxPlayoutDepth && !g.gameOver) {
+      bool stillAlive = g.board
+          .getLivingCellsOfPlayer(game.currentPlayer)
+          .length > 0;
+      if (!stillAlive) {
+        break;
+      }
       randomBot.play();
     }
-    return g.winner;
+    return new PlayoutResult(
+      gameOver: g.gameOver,
+      winner: g.winner,
+      survivedTurns: i - 1,
+    );
   }
 
   /**
    * Update all parent nodes with the playout result.
    */
-  _backpropagate(MctsNode node, int winner) {
-    bool currentPlayerWins = winner == game.currentPlayer;
-    bool currentPlayerAlive =
-        game.board.getLivingCellsOfPlayer(game.currentPlayer).length > 0;
+  _backpropagate(MctsNode node, PlayoutResult playoutResult) {
     MctsNode currentNode = node;
     while (currentNode != rootNode) {
       currentNode.nVisits++;
-      if (winner == null) {
-        currentNode.nWins += 0.5;
-      } else if (currentPlayerWins) {
-        currentNode.nWins += 1.0;
-      } else if (currentPlayerAlive) {
-        currentNode.nWins += 0.25;
+      if (playoutResult.gameOver) {
+        if (playoutResult.winner == null) {
+          currentNode.score += 0.5;
+        } else if (playoutResult.winner == game.currentPlayer) {
+          currentNode.score += 1.0;
+        }
+      } else {
+        currentNode.score += 0.25 * playoutResult.survivedTurns.toDouble() /
+            maxPlayoutDepth.toDouble();
       }
       currentNode = currentNode.parentNode;
     }

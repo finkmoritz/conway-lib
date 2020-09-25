@@ -12,9 +12,13 @@ void main() {
     if(game.currentPlayer == 0) {
       mctsBot.iterate(numberOfIterations: 10000);
       List<MctsNode> rankedNodes = mctsBot.getRankedNodes();
-      print(rankedNodes.map((e) => [e.toggledCellID, e.nVisits, e.nWins]).toList());
+      print(rankedNodes
+          .map((e) => [e.toggledCellID, e.nVisits, e.score])
+          .toList());
       int sum = 0;
-      rankedNodes.forEach((element) { sum += element.nVisits; });
+      rankedNodes.forEach((element) {
+        sum += element.nVisits;
+      });
       print(sum);
     }
     int move = game.currentPlayer == 0 ? mctsBot.play() : randomBot.play();
