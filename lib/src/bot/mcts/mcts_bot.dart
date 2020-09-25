@@ -154,8 +154,7 @@ class MctsBot extends Bot {
         bestNodes.add(node);
       }
     });
-    bestNodes.shuffle(_rng);
-    return bestNodes[0];
+    return bestNodes[_rng.nextInt(bestNodes.length)];
   }
 
   /**
