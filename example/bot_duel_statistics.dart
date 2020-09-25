@@ -18,7 +18,7 @@ void main() {
     MctsBot mctsBot = new MctsBot(game);
     do {
       if (game.currentPlayer == 0) {
-        mctsBot.play(numberOfIterations: 10000);
+        mctsBot.play(maxNumberOfIterations: 10000);
       } else {
         randomBot.play();
       }

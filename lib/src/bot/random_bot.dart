@@ -21,4 +21,11 @@ class RandomBot extends Bot {
     game.toggleCell(randomMove);
     return randomMove;
   }
+
+  @override
+  List<int> getRankedMoves() {
+    List<int> reasonableMoves = game.getReasonableMoves();
+    reasonableMoves.shuffle(_rng);
+    return reasonableMoves;
+  }
 }

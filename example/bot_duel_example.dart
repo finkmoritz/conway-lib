@@ -10,7 +10,7 @@ void main() {
     print('Player #${game.currentPlayer}');
     print('Board:\n${game.board.visualize()}');
     if(game.currentPlayer == 0) {
-      mctsBot.iterate(numberOfIterations: 10000);
+      mctsBot.iterate(maxNumberOfIterations: 10000);
       List<MctsNode> rankedNodes = mctsBot.getRankedNodes();
       print(rankedNodes
           .map((e) => [e.toggledCellID, e.nVisits, e.score])

@@ -14,4 +14,9 @@ abstract class Bot {
    * Makes a move on the Game and returns the index of the toggled Cell.
    */
   int play();
+
+  /**
+   * Returns a list of moves, ordered by their score
+   */
+  List<int> getRankedMoves();
 }

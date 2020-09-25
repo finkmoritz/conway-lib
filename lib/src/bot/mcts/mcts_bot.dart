@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:conway/src/bot/mcts/playout_result.dart';
+import 'package:conway/src/bot/simple_bot.dart';
 
-import '../../bot/random_bot.dart';
 import '../../game/game.dart';
 import '../bot.dart';
 import 'mcts_node.dart';
@@ -30,10 +30,10 @@ class MctsBot extends Bot {
    * the highest number of visits is chosen to be the best move.
    */
   @override
-  int play({int numberOfIterations = 1000}) {
-    iterate(numberOfIterations: numberOfIterations);
-    List<MctsNode> rankedNodes = getRankedNodes();
-    int move = rankedNodes[0].toggledCellID;
+  int play({int maxNumberOfIterations = 10000, Duration maxDuration}) {
+    iterate(
+        maxNumberOfIterations: maxNumberOfIterations, maxDuration: maxDuration);
+    int move = getRankedMoves()[0];
     game.toggleCell(move);
     return move;
   }
@@ -45,12 +45,16 @@ class MctsBot extends Bot {
    * use this option if the game state has not been changed in between
    * iterations!)
    */
-  void iterate({int numberOfIterations = 100, bool reset = true}) {
-    if(reset) {
+  void iterate(
+      {int maxNumberOfIterations = 1000,
+      Duration maxDuration,
+      bool reset = true}) {
+    DateTime endTime = DateTime.now().add(maxDuration ?? Duration(days: 999));
+    if (reset) {
       _reset();
     }
     int i = 0;
-    while(i < numberOfIterations) {
+    while (i < maxNumberOfIterations && DateTime.now().isBefore(endTime)) {
       List<MctsNode> path = _selectNodeForPlayout(rootNode);
       MctsNode selectedNode = path.last;
       Game gameAtSelectedNode = _computeGameAfterPath(path);
@@ -72,6 +76,17 @@ class MctsBot extends Bot {
         });
       }
     }
+  }
+
+  /**
+   * Return a list of moves sorted by the number of visits on the respective node.
+   * The first move in the list has the highest number of visits on the respective node.
+   */
+  @override
+  List<int> getRankedMoves() {
+    return getRankedNodes()
+        .map((node) => node.toggledCellID)
+        .toList();
   }
 
   /**
@@ -173,8 +188,8 @@ class MctsBot extends Bot {
     Game g = gameAtParent.clone();
     //Bring the game to the node's state:
     g.toggleCell(node.toggledCellID);
-    //Playout randomly afterwards:
-    RandomBot randomBot = new RandomBot(g);
+    //Playout fast and simple afterwards:
+    SimpleBot simpleBot = new SimpleBot(g);
     int i = 0;
     while (i++ < maxPlayoutDepth && !g.gameOver) {
       bool stillAlive = g.board
@@ -183,7 +198,7 @@ class MctsBot extends Bot {
       if (!stillAlive) {
         break;
       }
-      randomBot.play();
+      simpleBot.play();
     }
     return new PlayoutResult(
       gameOver: g.gameOver,
