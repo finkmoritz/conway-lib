@@ -60,7 +60,9 @@ class MctsBot extends Bot {
       Game gameAtSelectedNode = _computeGameAfterPath(path);
       List<int> reasonableMoves = gameAtSelectedNode.getReasonableMoves();
       if (reasonableMoves.isEmpty) {
-        i++;
+        if (++i > maxNumberOfIterations || DateTime.now().isAfter(endTime)) {
+          return;
+        }
         _backpropagate(
             selectedNode,
             new PlayoutResult(
@@ -69,7 +71,9 @@ class MctsBot extends Bot {
             ));
       } else {
         reasonableMoves.forEach((move) {
-          i++;
+          if (++i > maxNumberOfIterations || DateTime.now().isAfter(endTime)) {
+            return;
+          }
           MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
           PlayoutResult playoutResult = _playout(newNode, gameAtSelectedNode);
           _backpropagate(newNode, playoutResult);
@@ -107,7 +111,7 @@ class MctsBot extends Bot {
   bool _isInstantWin(MctsNode node) {
     return node.parentNode == rootNode &&
         node.childNodes.isEmpty &&
-        node.score == node.nVisits;
+        node.score >= node.nVisits;
   }
 
   /**
@@ -127,36 +131,31 @@ class MctsBot extends Bot {
     List<MctsNode> path = [rootNode];
     MctsNode currentNode = path[0];
     while(currentNode.childNodes.isNotEmpty) {
-      Function(MctsNode) explorationScore = (MctsNode n) => n.getExplorationScore();
-      currentNode = _getNodeWithHighestEval(currentNode.childNodes, explorationScore);
+      currentNode = _getNodeWithHighestExplorationScore(currentNode.childNodes);
       path.add(currentNode);
     }
     return path;
   }
 
   /**
-   * Returns the node with the highest return value of the eval function.
+   * Returns the node with the highest exploration score.
    * If multiple nodes have the same value, one of those will
    * be chosen at random.
    */
-  MctsNode _getNodeWithHighestEval(List<MctsNode> nodes, Function(MctsNode) eval) {
+  MctsNode _getNodeWithHighestExplorationScore(List<MctsNode> nodes) {
     double maxScore = 0;
     List<MctsNode> bestNodes = [];
     nodes.forEach((node) {
-      double evalScore = eval(node);
-      if(evalScore > maxScore) {
-        maxScore = evalScore;
+      double explorationScore = node.getExplorationScore();
+      if (explorationScore > maxScore) {
+        maxScore = explorationScore;
         bestNodes = [node];
-      } else if(evalScore == maxScore) {
+      } else if (explorationScore == maxScore) {
         bestNodes.add(node);
       }
     });
-    MctsNode bestNode = bestNodes[0];
-    if(bestNodes.length > 1) {
-      int randomIndex = _rng.nextInt(bestNodes.length);
-      bestNode = bestNodes[randomIndex];
-    }
-    return bestNode;
+    bestNodes.shuffle(_rng);
+    return bestNodes[0];
   }
 
   /**
@@ -221,8 +220,8 @@ class MctsBot extends Bot {
           currentNode.score += 1.0;
         }
       } else {
-        currentNode.score += 0.25 * playoutResult.survivedTurns.toDouble() /
-            maxPlayoutDepth.toDouble();
+        currentNode.score +=
+            0.25 * playoutResult.survivedTurns.toDouble() / maxPlayoutDepth;
       }
       currentNode = currentNode.parentNode;
     }
