@@ -14,7 +14,7 @@ void main() {
         height: 5,
         fractionLivingCells: 0.65,
         fractionDeadCells: 0.25);
-    MctsBot mctsBot = new MctsBot(game, maxPlayoutDepth: 50);
+    MctsBot mctsBot = new MctsBot(game);
     mctsBot.iterate(maxNumberOfIterations: 25000);
     int move = mctsBot.getRankedNodes()[0].toggledCellID;
     Cell cell = game.board.getCell(move);

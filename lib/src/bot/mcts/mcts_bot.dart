@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:conway/conway.dart';
-import 'package:conway/src/bot/mcts/playout_result.dart';
 
 import '../../game/game.dart';
 import '../bot.dart';
@@ -14,13 +13,10 @@ import 'mcts_node.dart';
  */
 class MctsBot extends Bot {
 
-  int maxPlayoutDepth;
-
   Random _rng;
   MctsNode rootNode;
 
-  MctsBot(Game game, {this.maxPlayoutDepth = 25})
-      : super(game) {
+  MctsBot(Game game) : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
     _reset();
   }
@@ -32,7 +28,9 @@ class MctsBot extends Bot {
   @override
   int play({int maxNumberOfIterations = 10000, Duration maxDuration}) {
     iterate(
-        maxNumberOfIterations: maxNumberOfIterations, maxDuration: maxDuration);
+        maxNumberOfIterations: maxNumberOfIterations,
+        maxDuration: maxDuration
+    );
     int move = getRankedMoves()[0];
     game.toggleCell(move);
     return move;
@@ -63,20 +61,15 @@ class MctsBot extends Bot {
         if (++i > maxNumberOfIterations || DateTime.now().isAfter(endTime)) {
           return;
         }
-        _backpropagate(
-            selectedNode,
-            new PlayoutResult(
-              gameOver: gameAtSelectedNode.gameOver,
-              winner: gameAtSelectedNode.winner,
-            ));
+        _backpropagate(selectedNode, _getScore(gameAtSelectedNode));
       } else {
         reasonableMoves.forEach((move) {
           if (++i > maxNumberOfIterations || DateTime.now().isAfter(endTime)) {
             return;
           }
-          MctsNode newNode = _expand(selectedNode, gameAtSelectedNode, move);
-          PlayoutResult playoutResult = _playout(newNode, gameAtSelectedNode);
-          _backpropagate(newNode, playoutResult);
+          MctsNode newNode = _expand(selectedNode, move);
+          double playoutScore = _playout(newNode, gameAtSelectedNode);
+          _backpropagate(newNode, playoutScore);
         });
       }
     }
@@ -110,7 +103,7 @@ class MctsBot extends Bot {
 
   bool _isInstantWin(MctsNode node) {
     return node.parentNode == rootNode &&
-        node.childNodes.isEmpty &&
+        node.isLeaf &&
         node.score >= node.nVisits;
   }
 
@@ -130,7 +123,7 @@ class MctsBot extends Bot {
   List<MctsNode> _selectNodeForPlayout(MctsNode rootNode) {
     List<MctsNode> path = [rootNode];
     MctsNode currentNode = path[0];
-    while(currentNode.childNodes.isNotEmpty) {
+    while (!currentNode.isLeaf) {
       currentNode = _getNodeWithHighestExplorationScore(currentNode.childNodes);
       path.add(currentNode);
     }
@@ -173,7 +166,7 @@ class MctsBot extends Bot {
    * Expand the given node with a new node representing the given move.
    * Returns this new node.
    */
-  MctsNode _expand(MctsNode node, Game game, int move) {
+  MctsNode _expand(MctsNode node, int move) {
     MctsNode newNode = new MctsNode(parentNode: node, toggledCellID: move);
     node.childNodes.add(newNode);
     return newNode;
@@ -182,47 +175,43 @@ class MctsBot extends Bot {
   /**
    * Randomly playout the game from this node and return the winner.
    */
-  PlayoutResult _playout(MctsNode node, Game gameAtParent) {
+  double _playout(MctsNode node, Game gameAtParent) {
     Game g = gameAtParent.clone();
     //Bring the game to the node's state:
     g.toggleCell(node.toggledCellID);
-    //Playout fast and simple afterwards:
-    Bot bot = new RandomBot(g);
-    int i = 0;
-    while (i++ < maxPlayoutDepth && !g.gameOver) {
-      bool stillAlive =
-          g.board.getLivingCellsOfPlayer(game.currentPlayer).length > 0;
-      if (!stillAlive) {
-        break;
-      }
-      bot.play();
-    }
-    return new PlayoutResult(
-      gameOver: g.gameOver,
-      winner: g.winner,
-      survivedTurns: i - 1,
-    );
+    return _getScore(g);
   }
 
   /**
    * Update all parent nodes with the playout result.
    */
-  _backpropagate(MctsNode node, PlayoutResult playoutResult) {
+  _backpropagate(MctsNode node, double score) {
     MctsNode currentNode = node;
     while (currentNode != rootNode) {
       currentNode.nVisits++;
-      if (playoutResult.gameOver) {
-        if (playoutResult.winner == null) {
-          currentNode.score += 0.5;
-        } else if (playoutResult.winner == game.currentPlayer) {
-          currentNode.score += 1.0;
-        }
-      } else {
-        currentNode.score +=
-            0.25 * playoutResult.survivedTurns.toDouble() / maxPlayoutDepth;
-      }
+      currentNode.score += score;
       currentNode = currentNode.parentNode;
     }
     rootNode.nVisits++;
+  }
+
+  /**
+   * Return a score that rates the current player's chances to win
+   * based on a simple calculation
+   */
+  double _getScore(Game g) {
+    int livingCellsOfPlayer =
+        g.board
+            .getLivingCellsOfPlayer(game.currentPlayer)
+            .length;
+    int livingCells = g.board
+        .getLivingCells()
+        .length;
+    if (livingCells == 0) {
+      return 1.0 /
+          game
+              .numberOfPlayers; // because draw should be considered if enemies take over
+    }
+    return livingCellsOfPlayer.toDouble() / livingCells.toDouble();
   }
 }

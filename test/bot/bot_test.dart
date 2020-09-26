@@ -24,7 +24,7 @@ void main() {
   group('Test MctsBot', () {
     test('MctsBot is able to play a Game', () {
       _game = new TestGame.TwoPlayers();
-      _mctsBot = new MctsBot(_game, maxPlayoutDepth: 10);
+      _mctsBot = new MctsBot(_game);
       expect(_game.currentPlayer, 0);
       expect(() => _mctsBot.play(maxDuration: Duration(seconds: 1)),
           isNot(throwsException));
@@ -33,7 +33,7 @@ void main() {
     test('MctsBot always finds instantly winning move', () {
       for (int i = 0; i < 50; i++) {
         _game = new TestGame.TwoPlayersInstantWin();
-        _mctsBot = new MctsBot(_game, maxPlayoutDepth: 10);
+        _mctsBot = new MctsBot(_game);
         int move = _mctsBot.play(maxNumberOfIterations: 100);
         bool isWinningMove = [1, 5, 6].contains(move);
         if (!isWinningMove) {

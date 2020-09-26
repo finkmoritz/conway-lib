@@ -15,8 +15,8 @@ void main() {
         height: 10,
         fractionLivingCells: 0.65,
         fractionDeadCells: 0.25);
-    SimpleBot otherBot = new SimpleBot(game);
-    MctsBot mctsBot = new MctsBot(game, maxPlayoutDepth: 10);
+    Bot otherBot = new SimpleBot(game);
+    MctsBot mctsBot = new MctsBot(game);
     do {
       if (game.currentPlayer == 0) {
         mctsBot.play(
@@ -30,6 +30,6 @@ void main() {
     } else {
       game.winner == 0 ? mctsWins++ : otherWins++;
     }
-    print('MCTS / Draw / Other: $mctsWins / $draws / $otherWins');
+    print('MCTS / Draw / Others: $mctsWins / $draws / $otherWins');
   }
 }

@@ -14,9 +14,11 @@ class MctsNode {
 
   MctsNode({this.parentNode, this.toggledCellID});
 
+  bool get isLeaf => childNodes.isEmpty;
+
   double getExplorationScore() {
     double exploitation = score / nVisits;
-    double exploration = sqrt(2 * log(parentNode.nVisits) / nVisits);
+    double exploration = sqrt(0.5 * log(parentNode.nVisits) / nVisits);
     return exploitation + exploration;
   }
 }
