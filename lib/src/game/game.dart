@@ -7,7 +7,7 @@ import '../exception/conway_exception.dart';
 
 /**
  * The Game class holds any information the user needs for playing
- * a game of Conway
+ * a game of Conway.
  */
 class Game {
   Board _board;
@@ -15,10 +15,15 @@ class Game {
   int _currentPlayer = 0;
   bool _gameOver = false;
   int _winner;
+  int _round = 1;
+  int _roundsBeforeSuddenDeath;
+  Random _rng;
 
-  Game({numberOfPlayers = 2, width = 5, height = 5}) {
+  Game({numberOfPlayers = 2, width = 5, height = 5, roundsBeforeSuddenDeath}) {
     _numberOfPlayers = numberOfPlayers;
     _board = new Board(width, height);
+    _roundsBeforeSuddenDeath = roundsBeforeSuddenDeath;
+    _rng = new Random(DateTime.now().millisecondsSinceEpoch);
   }
 
   get board => _board;
@@ -40,6 +45,12 @@ class Game {
    * only one Player's Cells survived.
    */
   get winner => _winner;
+
+  /**
+   * Returns the current round number (starting at 1).
+   * This number is increased at the beginning of each new round of the game.
+   */
+  get round => _round;
 
   /**
    * toggleCell is the only move in a Conway Game
@@ -137,26 +148,50 @@ class Game {
   _endTurn() {
     _iterate();
     _checkGameOver();
-    if(!gameOver) {
+    if (!gameOver) {
       do {
         _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
-      } while(board.getLivingCellsOfPlayer(_currentPlayer).isEmpty);
+        if (_currentPlayer == 0) {
+          _round++;
+          _suddenDeath();
+        }
+      } while (board
+          .getLivingCellsOfPlayer(_currentPlayer)
+          .isEmpty);
+    }
+  }
+
+  _suddenDeath() {
+    if (_roundsBeforeSuddenDeath != null && _round > _roundsBeforeSuddenDeath) {
+      int n = _round - _roundsBeforeSuddenDeath;
+      List<int> nonVoidCells = getPossibleMoves();
+      nonVoidCells.shuffle(_rng);
+      nonVoidCells.take(n).forEach((i) {
+        board.setCell(i, new Cell.Void());
+      });
+      _checkGameOver();
     }
   }
 
   _iterate() {
     Board result = _board.clone();
     int nCells = _board.width * _board.height;
-    for(int i=0; i<nCells; i++) {
+    for (int i = 0; i < nCells; i++) {
       List<Cell> neighbours = _board.getNeighbours(i);
-      int nNeighboursAlive = neighbours.where(
+      int nNeighboursAlive = neighbours
+          .where(
               (cell) => cell.state == CellState.ALIVE
-      ).toList().length;
-      CellState state = _board.getCell(i).state;
-      if(state == CellState.DEAD && nNeighboursAlive == 3) {
+      )
+          .toList()
+          .length;
+      CellState state = _board
+          .getCell(i)
+          .state;
+      if (state == CellState.DEAD && nNeighboursAlive == 3) {
         int dominantPlayer = _computeDominantPlayer(neighbours);
         result.getCell(i).revive(dominantPlayer);
-      } else if(state == CellState.ALIVE && (nNeighboursAlive < 2 || nNeighboursAlive > 3)) {
+      } else if (state == CellState.ALIVE &&
+          (nNeighboursAlive < 2 || nNeighboursAlive > 3)) {
         result.getCell(i).kill();
       }
     }

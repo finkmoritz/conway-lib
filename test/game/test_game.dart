@@ -59,7 +59,8 @@ class TestGame extends Game {
    * 1 # # 0 1
    * 1 #   0 0
    */
-  TestGame.TwoPlayers() {
+  TestGame.TwoPlayers({roundsBeforeSuddenDeath = null})
+      : super(roundsBeforeSuddenDeath: roundsBeforeSuddenDeath) {
     [1, 2, 5, 12, 18, 23, 24].forEach((index) {
       this.board.setCell(index, new Cell.Alive(0));
     });

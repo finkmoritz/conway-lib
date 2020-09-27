@@ -66,11 +66,45 @@ void main() {
     test('getPossibleMoves', () {
       List<int> possibleMoves = _game.getPossibleMoves();
       expect(possibleMoves.length, 22);
-      expect(possibleMoves, [ 0,  1,  2,  3,  4,
-                              5,  6,  7,      9,
-                                 11, 12, 13, 14,
-                             15, 16, 17, 18, 19,
-                             20, 21,     23, 24]);
+      expect(possibleMoves, [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        9,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24
+      ]);
+    });
+  });
+
+  group('Test sudden death', () {
+    setUp(() async {
+      _game = new TestGame.TwoPlayers(roundsBeforeSuddenDeath: 1);
+    });
+    test('Test sudden death', () {
+      expect(_game.round, 1);
+      expect(_game.getPossibleMoves().length, 22);
+      _game.toggleCell(0);
+      expect(_game.getPossibleMoves().length, 22);
+      _game.toggleCell(19);
+      expect(_game.round, 2);
+      expect(_game.getPossibleMoves().length, 21);
     });
   });
 }
