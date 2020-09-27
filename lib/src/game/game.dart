@@ -53,6 +53,12 @@ class Game {
   get round => _round;
 
   /**
+   * Returns the number of rounds before the sudden death mechanism is triggered
+   * or null if no sudden death was configured.
+   */
+  get roundsBeforeSuddenDeath => _roundsBeforeSuddenDeath;
+
+  /**
    * toggleCell is the only move in a Conway Game
    */
   toggleCell(int i) {
