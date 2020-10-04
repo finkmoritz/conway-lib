@@ -28,11 +28,10 @@ class MctsBot extends Bot {
   @override
   int play({int maxNumberOfIterations = 10000, Duration maxDuration}) {
     iterate(
-        maxNumberOfIterations: maxNumberOfIterations,
-        maxDuration: maxDuration
-    );
+        maxNumberOfIterations: maxNumberOfIterations, maxDuration: maxDuration);
     int move = getRankedMoves()[0];
     game.toggleCell(move);
+    game.endTurn();
     return move;
   }
 
@@ -158,6 +157,7 @@ class MctsBot extends Bot {
     for(int i=1; i<path.length; i++) {
       int move = path[i].toggledCellID;
       gameClone.toggleCell(move);
+      gameClone.endTurn();
     }
     return gameClone;
   }
@@ -179,6 +179,7 @@ class MctsBot extends Bot {
     Game g = gameAtParent.clone();
     //Bring the game to the node's state:
     g.toggleCell(node.toggledCellID);
+    g.endTurn();
     return _getScore(g);
   }
 
@@ -202,7 +203,7 @@ class MctsBot extends Bot {
   double _getScore(Game g) {
     int livingCellsOfPlayer =
         g.board
-            .getLivingCellsOfPlayer(game.currentPlayer)
+            .getLivingCellsOfPlayer(game.currentPlayerId)
             .length;
     int livingCells = g.board
         .getLivingCells()

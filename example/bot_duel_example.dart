@@ -7,9 +7,9 @@ void main() {
   RandomBot randomBot = new RandomBot(game);
   MctsBot mctsBot = new MctsBot(game);
   do {
-    print('Player #${game.currentPlayer}');
+    print('Player #${game.currentPlayerId}');
     print('Board:\n${game.board.visualize()}');
-    if(game.currentPlayer == 0) {
+    if (game.currentPlayerId == 0) {
       mctsBot.iterate(maxNumberOfIterations: 10000);
       List<MctsNode> rankedNodes = mctsBot.getRankedNodes();
       print(rankedNodes
@@ -21,7 +21,7 @@ void main() {
       });
       print(sum);
     }
-    int move = game.currentPlayer == 0 ? mctsBot.play() : randomBot.play();
+    int move = game.currentPlayerId == 0 ? mctsBot.play() : randomBot.play();
     print('Move: $move\n');
   } while(!game.gameOver);
   if(game.winner == null) {

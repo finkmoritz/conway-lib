@@ -13,8 +13,9 @@ void main() {
     });
     test('toggleCell', () {
       _game.toggleCell(18);
+      _game.endTurn();
       expect(_game.board, new TestGame.SinglePlayerAfterToggleCell18().board);
-      expect(_game.currentPlayer, 0);
+      expect(_game.currentPlayerId, 0);
       expect(_game.gameOver, false);
       expect(_game.winner, null);
     });
@@ -58,10 +59,29 @@ void main() {
     });
     test('toggleCell', () {
       _game.toggleCell(0);
+      expect(_game.toggledCellId, 0);
+      _game.endTurn();
       expect(_game.board, new TestGame.TwoPlayersAfterToggleCell0().board);
-      expect(_game.currentPlayer, 1);
+      expect(_game.currentPlayerId, 1);
       expect(_game.gameOver, false);
       expect(_game.winner, null);
+    });
+    test('toggle same cell', () {
+      _game.toggleCell(0);
+      expect(_game.toggledCellId, 0);
+      _game.toggleCell(0);
+      expect(_game.toggledCellId, null);
+      expect(() => _game.endTurn(), throwsException);
+    });
+    test('toggle another cell', () {
+      _game.toggleCell(24);
+      expect(_game.toggledCellId, 24);
+      _game.toggleCell(0);
+      expect(_game.toggledCellId, 0);
+      expect(() => _game.endTurn(), isNot(throwsException));
+      expect(_game.lastToggledCellId, 0);
+      expect(_game.toggledCellId, null);
+      expect(_game.board, new TestGame.TwoPlayersAfterToggleCell0().board);
     });
     test('getPossibleMoves', () {
       List<int> possibleMoves = _game.getPossibleMoves();
@@ -101,8 +121,10 @@ void main() {
       expect(_game.round, 1);
       expect(_game.getPossibleMoves().length, 22);
       _game.toggleCell(0);
+      _game.endTurn();
       expect(_game.getPossibleMoves().length, 22);
       _game.toggleCell(19);
+      _game.endTurn();
       expect(_game.round, 2);
       expect(_game.getPossibleMoves().length, 21);
     });

@@ -5,7 +5,7 @@ void main() {
       height: 4, fractionLivingCells: 0.6, fractionDeadCells: 0.25);
   Bot bot = new MctsBot(game);
   do {
-    print('Player #${game.currentPlayer}');
+    print('Player #${game.currentPlayerId}');
     print('Board:\n${game.board.visualize()}');
     int move = bot.play();
     print('Move: $move\n');

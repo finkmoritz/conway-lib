@@ -15,9 +15,9 @@ void main() {
       _randomBot = new RandomBot(_game);
     });
     test('RandomBot is able to play a Game', () {
-      expect(_game.currentPlayer, 0);
+      expect(_game.currentPlayerId, 0);
       expect(() => _randomBot.play(), isNot(throwsException));
-      expect(_game.currentPlayer, _game.gameOver ? 0 : 1);
+      expect(_game.currentPlayerId, _game.gameOver ? 0 : 1);
     });
   });
 
@@ -25,10 +25,10 @@ void main() {
     test('MctsBot is able to play a Game', () {
       _game = new TestGame.TwoPlayers();
       _mctsBot = new MctsBot(_game);
-      expect(_game.currentPlayer, 0);
+      expect(_game.currentPlayerId, 0);
       expect(() => _mctsBot.play(maxDuration: Duration(seconds: 1)),
           isNot(throwsException));
-      expect(_game.currentPlayer, _game.gameOver ? 0 : 1);
+      expect(_game.currentPlayerId, _game.gameOver ? 0 : 1);
     });
     test('MctsBot always finds instantly winning move', () {
       for (int i = 0; i < 50; i++) {

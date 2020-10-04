@@ -12,7 +12,10 @@ import '../exception/conway_exception.dart';
 class Game {
   Board _board;
   int _numberOfPlayers;
-  int _currentPlayer = 0;
+  int _currentPlayerId = 0;
+  int _toggledCellId;
+  int _lastToggledCellId;
+  int _toggledCellPlayerId;
   bool _gameOver = false;
   int _winner;
   int _round = 1;
@@ -33,7 +36,18 @@ class Game {
   /**
    * Returns the ID of the current Player.
    */
-  get currentPlayer => _currentPlayer;
+  get currentPlayerId => _currentPlayerId;
+
+  /**
+   * Return the ID of the currently toggled cell.
+   * Returns null if no cell is toggled.
+   */
+  get toggledCellId => _toggledCellId;
+
+  /**
+   * Returns the ID of the cell that has been toggled during the last turn.
+   */
+  get lastToggledCellId => _lastToggledCellId;
 
   /**
    * Returns true if and only if at most one PLayer's Cells survived.
@@ -59,33 +73,74 @@ class Game {
   get roundsBeforeSuddenDeath => _roundsBeforeSuddenDeath;
 
   /**
-   * toggleCell is the only move in a Conway Game
+   * toggleCell is the only move in a Conway Game.
    */
   toggleCell(int i) {
     if (_gameOver) {
       throw new ConwayException(
           'Cannot toggle the Cell because the Game is over');
     }
+    if (i == _toggledCellId) {
+      _toggledCellId = null;
+    } else {
+      if (_toggledCellId != null) {
+        _toggleCellInternal(_toggledCellId);
+      }
+      _toggledCellId = i;
+    }
+    _toggleCellInternal(i);
+  }
+
+  _toggleCellInternal(int i) {
     Cell cell = _board.getCell(i);
     switch (cell.state) {
       case CellState.ALIVE:
+        _toggledCellPlayerId = cell.playerID;
         cell.kill();
         break;
       case CellState.DEAD:
-        cell.revive(_currentPlayer);
+        cell.revive(_toggledCellPlayerId ?? _currentPlayerId);
+        _toggledCellPlayerId = null;
         break;
       default:
         throw new ConwayException('Cannot toggle Cell in state ${cell.state}');
         break;
     }
-    _endTurn();
   }
 
   /**
-   * see toggleCell method
+   * see toggleCell method.
    */
   toggleCellByCoordinates(int x, int y) {
     toggleCell(y * _board.width + x);
+  }
+
+  /**
+   * endTurn ends the turn, i.e. it applies the rules of Conway's
+   * Game of Life and sets the game over state if applicable.
+   */
+  endTurn() {
+    if (_toggledCellId == null) {
+      throw new ConwayException('Cannot end turn if no cell is toggled');
+    }
+    _iterate();
+
+    _lastToggledCellId = _toggledCellId;
+    _toggledCellId = null;
+    _toggledCellPlayerId = null;
+
+    _checkGameOver();
+    if (!gameOver) {
+      do {
+        _currentPlayerId = (_currentPlayerId + 1) % _numberOfPlayers;
+        if (_currentPlayerId == 0) {
+          _round++;
+          _suddenDeath();
+        }
+      } while (board
+          .getLivingCellsOfPlayer(_currentPlayerId)
+          .isEmpty);
+    }
   }
 
   /**
@@ -151,22 +206,6 @@ class Game {
     return reasonableMoves;
   }
 
-  _endTurn() {
-    _iterate();
-    _checkGameOver();
-    if (!gameOver) {
-      do {
-        _currentPlayer = (_currentPlayer + 1) % _numberOfPlayers;
-        if (_currentPlayer == 0) {
-          _round++;
-          _suddenDeath();
-        }
-      } while (board
-          .getLivingCellsOfPlayer(_currentPlayer)
-          .isEmpty);
-    }
-  }
-
   _suddenDeath() {
     if (_roundsBeforeSuddenDeath != null && _round > _roundsBeforeSuddenDeath) {
       int n = _round - _roundsBeforeSuddenDeath;
@@ -220,8 +259,8 @@ class Game {
     if(dominantPlayers.length == 1) {
       return dominantPlayers[0];
     } else {
-      if(dominantPlayers.contains(_currentPlayer)) {
-        return _currentPlayer;
+      if (dominantPlayers.contains(_currentPlayerId)) {
+        return _currentPlayerId;
       } else {
         int random = (new Random()).nextInt(dominantPlayers.length);
         return dominantPlayers[random];
@@ -251,9 +290,14 @@ class Game {
   Game clone() {
     Game clone = new Game(numberOfPlayers: this.numberOfPlayers);
     clone._board = this.board.clone();
-    clone._currentPlayer = this.currentPlayer;
+    clone._currentPlayerId = this.currentPlayerId;
+    clone._toggledCellId = this.toggledCellId;
+    clone._lastToggledCellId = this.lastToggledCellId;
+    clone._toggledCellPlayerId = this._toggledCellPlayerId;
     clone._gameOver = this.gameOver;
     clone._winner = this.winner;
+    clone._round = this.round;
+    clone._roundsBeforeSuddenDeath = this.roundsBeforeSuddenDeath;
     return clone;
   }
 
@@ -261,9 +305,13 @@ class Game {
   bool operator ==(other) {
     return this.board == other.board
         && this.numberOfPlayers == other.numberOfPlayers
-        && this.currentPlayer == other.currentPlayer
+        && this.currentPlayerId == other.currentPlayerId
+        && this.toggledCellId == other.toggledCellId
+        && this.lastToggledCellId == other.lastToggledCellId
         && this.gameOver == other.gameOver
-        && this.winner == other.winner;
+        && this.winner == other.winner
+        && this.round == other.round
+        && this.roundsBeforeSuddenDeath == other.roundsBeforeSuddenDeath;
   }
 
   @override

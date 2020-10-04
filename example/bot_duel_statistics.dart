@@ -18,7 +18,7 @@ void main() {
     Bot otherBot = new SimpleBot(game);
     MctsBot mctsBot = new MctsBot(game);
     do {
-      if (game.currentPlayer == 0) {
+      if (game.currentPlayerId == 0) {
         mctsBot.play(
             maxNumberOfIterations: 10000, maxDuration: Duration(seconds: 10));
       } else {

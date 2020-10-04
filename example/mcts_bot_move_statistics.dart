@@ -20,7 +20,7 @@ void main() {
     Cell cell = game.board.getCell(move);
     switch (cell.state) {
       case CellState.ALIVE:
-        if (cell.playerID == game.currentPlayer) {
+        if (cell.playerID == game.currentPlayerId) {
           destroyFriendlyCell++;
         } else {
           destroyHostileCell++;

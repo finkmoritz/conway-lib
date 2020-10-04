@@ -19,6 +19,7 @@ class RandomBot extends Bot {
     List<int> reasonableMoves = game.getReasonableMoves();
     int randomMove = reasonableMoves[_rng.nextInt(reasonableMoves.length)];
     game.toggleCell(randomMove);
+    game.endTurn();
     return randomMove;
   }
 

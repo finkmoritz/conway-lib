@@ -17,6 +17,7 @@ class SimpleBot extends Bot {
   int play() {
     int move = getRankedMoves()[0];
     game.toggleCell(move);
+    game.endTurn();
     return move;
   }
 
@@ -27,6 +28,7 @@ class SimpleBot extends Bot {
     reasonableMoves.forEach((move) {
       Game g = game.clone();
       g.toggleCell(move);
+      g.endTurn();
       scores[move] = _getScore(g);
     });
     reasonableMoves.shuffle(_rng);
@@ -38,7 +40,7 @@ class SimpleBot extends Bot {
 
   double _getScore(Game g) {
     int livingCellsOfPlayer =
-        g.board.getLivingCellsOfPlayer(game.currentPlayer).length;
+        g.board.getLivingCellsOfPlayer(game.currentPlayerId).length;
     int livingCells = g.board.getLivingCells().length;
     if (livingCells == 0) {
       return 1.0 /
