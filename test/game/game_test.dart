@@ -113,6 +113,19 @@ void main() {
     });
   });
 
+  group('Test game over', () {
+    setUp(() async {
+      _game = new TestGame.TwoPlayersAfterToggleCell0();
+    });
+    test('Test game over', () {
+      expect(_game.gameOver, false);
+      _game.toggleCell(2);
+      expect(_game.gameOver, false);
+      _game.endTurn();
+      expect(_game.gameOver, true);
+    });
+  });
+
   group('Test sudden death', () {
     setUp(() async {
       _game = new TestGame.TwoPlayers(roundsBeforeSuddenDeath: 1);
