@@ -209,9 +209,8 @@ class MctsBot extends Bot {
         .getLivingCells()
         .length;
     if (livingCells == 0) {
-      return 1.0 /
-          game
-              .numberOfPlayers; // because draw should be considered if enemies take over
+      // draw should be considered if enemies take over
+      return 1.0 / game.numberOfPlayers;
     }
     return livingCellsOfPlayer.toDouble() / livingCells.toDouble();
   }

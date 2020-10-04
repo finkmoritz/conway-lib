@@ -297,21 +297,23 @@ class Game {
     clone._gameOver = this.gameOver;
     clone._winner = this.winner;
     clone._round = this.round;
-    clone._roundsBeforeSuddenDeath = this.roundsBeforeSuddenDeath;
+    //TODO: left out, otherwise MctsBot breaks...
+    //clone._roundsBeforeSuddenDeath = this.roundsBeforeSuddenDeath;
     return clone;
   }
 
   @override
   bool operator ==(other) {
-    return this.board == other.board
-        && this.numberOfPlayers == other.numberOfPlayers
-        && this.currentPlayerId == other.currentPlayerId
-        && this.toggledCellId == other.toggledCellId
-        && this.lastToggledCellId == other.lastToggledCellId
-        && this.gameOver == other.gameOver
-        && this.winner == other.winner
-        && this.round == other.round
-        && this.roundsBeforeSuddenDeath == other.roundsBeforeSuddenDeath;
+    return this.board == other.board &&
+        this.numberOfPlayers == other.numberOfPlayers &&
+        this.currentPlayerId == other.currentPlayerId &&
+        this.toggledCellId == other.toggledCellId &&
+        this.lastToggledCellId == other.lastToggledCellId &&
+        this.gameOver == other.gameOver &&
+        this.winner == other.winner &&
+        this.round == other.round;
+    //TODO: left out because not included in clone()
+    //&& this.roundsBeforeSuddenDeath == other.roundsBeforeSuddenDeath;
   }
 
   @override
