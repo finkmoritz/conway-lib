@@ -32,7 +32,7 @@ class Game {
     _numberOfPlayers = numberOfPlayers;
     _board = new Board(width, height);
     _roundsBeforeSuddenDeath = roundsBeforeSuddenDeath;
-    _onGameOver = onGameOver ?? (int winner) => {};
+    _onGameOver = onGameOver ?? (int winner) {};
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
   }
 
