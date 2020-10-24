@@ -20,12 +20,19 @@ class Game {
   int _winner;
   int _round = 1;
   int _roundsBeforeSuddenDeath;
+  OnGameOverCallback _onGameOver;
   Random _rng;
 
-  Game({numberOfPlayers = 2, width = 5, height = 5, roundsBeforeSuddenDeath}) {
+  Game(
+      {numberOfPlayers = 2,
+      width = 5,
+      height = 5,
+      int roundsBeforeSuddenDeath,
+      OnGameOverCallback onGameOver}) {
     _numberOfPlayers = numberOfPlayers;
     _board = new Board(width, height);
     _roundsBeforeSuddenDeath = roundsBeforeSuddenDeath;
+    _onGameOver = onGameOver ?? (int winner) {};
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
   }
 
@@ -59,6 +66,11 @@ class Game {
    * only one Player's Cells survived.
    */
   get winner => _winner;
+
+  /**
+   * Returns true if and only if the game is over and ended in a draw.
+   */
+  get isDraw => gameOver && winner == null;
 
   /**
    * Returns the current round number (starting at 1).
@@ -271,7 +283,7 @@ class Game {
   _checkGameOver() {
     List<Cell> livingCells = _board.getLivingCells();
     if(livingCells.isEmpty) {
-      _gameOver = true;
+      _setGameOver();
     } else {
       if (numberOfPlayers == 1) {
         return;
@@ -282,8 +294,16 @@ class Game {
           return;
         }
       }
-      _gameOver = true;
       _winner = livingPlayer;
+      _setGameOver();
+    }
+  }
+
+  _setGameOver() {
+    bool isAlreadyGameOver = _gameOver;
+    _gameOver = true;
+    if (!isAlreadyGameOver) {
+      _onGameOver(winner);
     }
   }
 
@@ -299,6 +319,7 @@ class Game {
     clone._round = this.round;
     //TODO: left out, otherwise MctsBot breaks...
     //clone._roundsBeforeSuddenDeath = this.roundsBeforeSuddenDeath;
+    clone._onGameOver = (int winner) {};
     return clone;
   }
 
@@ -314,6 +335,7 @@ class Game {
         this.round == other.round;
     //TODO: left out because not included in clone()
     //&& this.roundsBeforeSuddenDeath == other.roundsBeforeSuddenDeath;
+    //TODO: onGameOver left out on purpose to not break MctsBot
   }
 
   @override

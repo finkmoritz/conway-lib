@@ -114,8 +114,14 @@ void main() {
   });
 
   group('Test game over', () {
+    bool _onGameOverCalled = false;
+    int _winner;
     setUp(() async {
-      _game = new TestGame.TwoPlayersAfterToggleCell0();
+      OnGameOverCallback _onGameOver = (int winner) {
+        _onGameOverCalled = true;
+        _winner = winner;
+      };
+      _game = new TestGame.TwoPlayersAfterToggleCell0(onGameOver: _onGameOver);
     });
     test('Test game over', () {
       expect(_game.gameOver, false);
@@ -123,6 +129,8 @@ void main() {
       expect(_game.gameOver, false);
       _game.endTurn();
       expect(_game.gameOver, true);
+      expect(_onGameOverCalled, true);
+      expect(_winner, _game.winner);
     });
   });
 
