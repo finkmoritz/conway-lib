@@ -294,8 +294,8 @@ class Game {
           return;
         }
       }
-      _setGameOver();
       _winner = livingPlayer;
+      _setGameOver();
     }
   }
 
