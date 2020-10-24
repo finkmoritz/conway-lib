@@ -17,10 +17,14 @@ Install the [Dart SDK](https://dart.dev/get-dart).
 
 ## Releases
 
+### 1.1.13
+- Added method `Game.isDraw`
+- Added callback `Game.onGameOver`
+
 ### 1.1.12
 - Cells can be toggled back and forth without ending the turn
-- Turn must be explicitly ended by calling Game.endTurn()
-- Fix Game.clone() method
+- Turn must be explicitly ended by calling `Game.endTurn()`
+- Fix `Game.clone()` method
 
 ### 1.1.11
 - Make the configured number of `roundsBeforeSudddenDeath` accessible in the `Game` class
