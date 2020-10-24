@@ -319,6 +319,7 @@ class Game {
     clone._round = this.round;
     //TODO: left out, otherwise MctsBot breaks...
     //clone._roundsBeforeSuddenDeath = this.roundsBeforeSuddenDeath;
+    clone._onGameOver = (int winner) {};
     return clone;
   }
 
@@ -334,6 +335,7 @@ class Game {
         this.round == other.round;
     //TODO: left out because not included in clone()
     //&& this.roundsBeforeSuddenDeath == other.roundsBeforeSuddenDeath;
+    //TODO: onGameOver left out on purpose to not break MctsBot
   }
 
   @override
