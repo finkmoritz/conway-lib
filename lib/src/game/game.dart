@@ -5,8 +5,6 @@ import '../cell/cell.dart';
 import '../cell/cell_state.dart';
 import '../exception/conway_exception.dart';
 
-typedef void OnGameOverCallback(int winner);
-
 /**
  * The Game class holds any information the user needs for playing
  * a game of Conway.
