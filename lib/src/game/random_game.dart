@@ -4,20 +4,18 @@ import '../cell/cell.dart';
 import 'game.dart';
 
 class RandomGame extends Game {
-  RandomGame({
-    numberOfPlayers = 2,
-    width = 5,
-    height = 5,
-    roundsBeforeSuddenDeath,
-    double fractionLivingCells = 0.5,
-    double fractionDeadCells = 0.3,
-    Function onGameOver,
-  }) : super(
+  RandomGame(
+      {numberOfPlayers = 2,
+      width = 5,
+      height = 5,
+      roundsBeforeSuddenDeath,
+      double fractionLivingCells = 0.5,
+      double fractionDeadCells = 0.3})
+      : super(
             numberOfPlayers: numberOfPlayers,
             width: width,
             height: height,
-            roundsBeforeSuddenDeath: roundsBeforeSuddenDeath,
-            onGameOver: onGameOver) {
+            roundsBeforeSuddenDeath: roundsBeforeSuddenDeath) {
     int totalCells = width * height;
     int cellsPerPlayer =
         (fractionLivingCells * totalCells / numberOfPlayers).floor();

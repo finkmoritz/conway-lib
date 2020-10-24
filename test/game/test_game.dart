@@ -79,8 +79,7 @@ class TestGame extends Game {
    * # 1 # # #
    * # #   0 0
    */
-  TestGame.TwoPlayersAfterToggleCell0({Function onGameOver})
-      : super(onGameOver: onGameOver) {
+  TestGame.TwoPlayersAfterToggleCell0() {
     [0, 2, 5, 23, 24].forEach((index) {
       this.board.setCell(index, new Cell.Alive(0));
     });
