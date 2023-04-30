@@ -17,6 +17,9 @@ Install the [Dart SDK](https://dart.dev/get-dart).
 
 ## Releases
 
+### 2.0.0
+- Migrate library to sound null safety
+
 ### 1.1.12
 - Cells can be toggled back and forth without ending the turn
 - Turn must be explicitly ended by calling Game.endTurn()

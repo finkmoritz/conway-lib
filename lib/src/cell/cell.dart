@@ -6,9 +6,8 @@ import 'cell_state.dart';
  * It is occupied by a player if and only if it is ALIVE.
  */
 class Cell {
-
-  CellState _state;
-  int _playerID;
+  late CellState _state;
+  int? _playerID;
 
   Cell.Void() {
     _state = CellState.VOID;
@@ -24,16 +23,17 @@ class Cell {
   }
 
   get state => _state;
+
   get playerID => _playerID;
 
   revive(int playerID) {
-    switch(_state) {
+    switch (_state) {
       case CellState.VOID:
-        throw new ConwayException('Cell in state CellState.VOID cannot be revived');
-        break;
+        throw new ConwayException(
+            'Cell in state CellState.VOID cannot be revived');
       case CellState.ALIVE:
-        throw new ConwayException('Cell in state CellState.ALIVE cannot be revived');
-        break;
+        throw new ConwayException(
+            'Cell in state CellState.ALIVE cannot be revived');
       default:
         _state = CellState.ALIVE;
         _playerID = playerID;
@@ -42,13 +42,13 @@ class Cell {
   }
 
   kill() {
-    switch(_state) {
+    switch (_state) {
       case CellState.VOID:
-        throw new ConwayException('Cell in state CellState.VOID cannot be killed');
-        break;
+        throw new ConwayException(
+            'Cell in state CellState.VOID cannot be killed');
       case CellState.DEAD:
-        throw new ConwayException('Cell in state CellState.DEAD cannot be killed');
-        break;
+        throw new ConwayException(
+            'Cell in state CellState.DEAD cannot be killed');
       default:
         _state = CellState.DEAD;
         _playerID = null;
@@ -57,9 +57,9 @@ class Cell {
   }
 
   Cell clone() {
-    switch(_state) {
+    switch (_state) {
       case CellState.ALIVE:
-        return new Cell.Alive(_playerID);
+        return new Cell.Alive(_playerID!);
       case CellState.DEAD:
         return new Cell.Dead();
       default:
@@ -68,8 +68,10 @@ class Cell {
   }
 
   @override
-  bool operator ==(other) {
-    return this.state == other.state && this.playerID == other.playerID;
+  bool operator ==(Object other) {
+    return other is Cell &&
+        this.state == other.state &&
+        this.playerID == other.playerID;
   }
 
   @override

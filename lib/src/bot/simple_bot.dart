@@ -7,7 +7,7 @@ import 'bot.dart';
  * Bot that plays random moves
  */
 class SimpleBot extends Bot {
-  Random _rng;
+  late Random _rng;
 
   SimpleBot(Game game) : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
@@ -33,7 +33,7 @@ class SimpleBot extends Bot {
     });
     reasonableMoves.shuffle(_rng);
     reasonableMoves.sort((a, b) {
-      return ((scores[b] - scores[a]) * 1000).floor();
+      return ((scores[b]! - scores[a]!) * 1000).floor();
     });
     return reasonableMoves;
   }

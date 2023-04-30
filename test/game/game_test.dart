@@ -5,7 +5,7 @@ import 'test_game.dart';
 
 void main() {
   
-  Game _game;
+  late Game _game;
 
   group('Test single player game', () {
     setUp(() async {

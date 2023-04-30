@@ -19,12 +19,12 @@ class RandomGame extends Game {
     int totalCells = width * height;
     int cellsPerPlayer =
         (fractionLivingCells * totalCells / numberOfPlayers).floor();
-    int livingCells = cellsPerPlayer * numberOfPlayers;
+    int livingCells = cellsPerPlayer * numberOfPlayers as int;
     int deadCells = (fractionDeadCells * totalCells).floor();
     int voidCells = totalCells - livingCells - deadCells;
     List<Cell> cells = [
       ...new List.generate(
-          livingCells, (i) => new Cell.Alive(i % numberOfPlayers)),
+          livingCells, (i) => new Cell.Alive(i % numberOfPlayers as int)),
       ...new List.generate(deadCells, (i) => new Cell.Dead()),
       ...new List.generate(voidCells, (i) => new Cell.Void())
     ];

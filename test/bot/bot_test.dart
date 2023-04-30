@@ -5,9 +5,9 @@ import '../game/test_game.dart';
 
 void main() {
 
-  Game _game;
-  RandomBot _randomBot;
-  MctsBot _mctsBot;
+  late Game _game;
+  late RandomBot _randomBot;
+  late MctsBot _mctsBot;
 
   group('Test RandomBot', () {
     setUp(() async {

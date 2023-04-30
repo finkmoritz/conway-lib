@@ -10,17 +10,17 @@ import '../exception/conway_exception.dart';
  * a game of Conway.
  */
 class Game {
-  Board _board;
-  int _numberOfPlayers;
+  late Board _board;
+  late int _numberOfPlayers;
   int _currentPlayerId = 0;
-  int _toggledCellId;
-  int _lastToggledCellId;
-  int _toggledCellPlayerId;
+  int? _toggledCellId;
+  int? _lastToggledCellId;
+  int? _toggledCellPlayerId;
   bool _gameOver = false;
-  int _winner;
+  int? _winner;
   int _round = 1;
-  int _roundsBeforeSuddenDeath;
-  Random _rng;
+  int? _roundsBeforeSuddenDeath;
+  late Random _rng;
 
   Game({numberOfPlayers = 2, width = 5, height = 5, roundsBeforeSuddenDeath}) {
     _numberOfPlayers = numberOfPlayers;
@@ -84,7 +84,7 @@ class Game {
       _toggledCellId = null;
     } else {
       if (_toggledCellId != null) {
-        _toggleCellInternal(_toggledCellId);
+        _toggleCellInternal(_toggledCellId!);
       }
       _toggledCellId = i;
     }
@@ -104,7 +104,6 @@ class Game {
         break;
       default:
         throw new ConwayException('Cannot toggle Cell in state ${cell.state}');
-        break;
     }
   }
 
@@ -112,7 +111,7 @@ class Game {
    * see toggleCell method.
    */
   toggleCellByCoordinates(int x, int y) {
-    toggleCell(y * _board.width + x);
+    toggleCell(y * _board.width + x as int);
   }
 
   /**
@@ -137,9 +136,7 @@ class Game {
           _round++;
           _suddenDeath();
         }
-      } while (board
-          .getLivingCellsOfPlayer(_currentPlayerId)
-          .isEmpty);
+      } while (board.getLivingCellsOfPlayer(_currentPlayerId).isEmpty);
     }
   }
 
@@ -152,9 +149,7 @@ class Game {
     }
     List<int> possibleMoves = [];
     for (int i = 0; i < board.numberOfCells; i++) {
-      if ([CellState.ALIVE, CellState.DEAD].contains(board
-          .getCell(i)
-          .state)) {
+      if ([CellState.ALIVE, CellState.DEAD].contains(board.getCell(i).state)) {
         possibleMoves.add(i);
       }
     }
@@ -184,9 +179,8 @@ class Game {
     }
     List<int> idleMoves = [];
     for (int i = 0; i < board.numberOfCells; i++) {
-      if (_board
-          .getCell(i)
-          .state != CellState.VOID && numberOfNeighbours[i] == 0) {
+      if (_board.getCell(i).state != CellState.VOID &&
+          numberOfNeighbours[i] == 0) {
         List<int> neighbourIndices = board.getNeighbourIndices(i);
         if (neighbourIndices
             .where((nbrIndex) => numberOfNeighbours[nbrIndex] != 0)
@@ -198,17 +192,16 @@ class Game {
     List<int> reasonableMoves = getPossibleMoves();
     if (idleMoves.length > 1) {
       reasonableMoves.removeWhere((move) => idleMoves.contains(move));
-      idleMoves.shuffle(Random(DateTime
-          .now()
-          .millisecondsSinceEpoch));
+      idleMoves.shuffle(Random(DateTime.now().millisecondsSinceEpoch));
       reasonableMoves.add(idleMoves.first);
     }
     return reasonableMoves;
   }
 
   _suddenDeath() {
-    if (_roundsBeforeSuddenDeath != null && _round > _roundsBeforeSuddenDeath) {
-      int n = _round - _roundsBeforeSuddenDeath;
+    if (_roundsBeforeSuddenDeath != null &&
+        _round > _roundsBeforeSuddenDeath!) {
+      int n = _round - _roundsBeforeSuddenDeath!;
       List<int> nonVoidCells = getPossibleMoves();
       nonVoidCells.shuffle(_rng);
       nonVoidCells.take(n).forEach((i) {
@@ -224,14 +217,10 @@ class Game {
     for (int i = 0; i < nCells; i++) {
       List<Cell> neighbours = _board.getNeighbours(i);
       int nNeighboursAlive = neighbours
-          .where(
-              (cell) => cell.state == CellState.ALIVE
-      )
+          .where((cell) => cell.state == CellState.ALIVE)
           .toList()
           .length;
-      CellState state = _board
-          .getCell(i)
-          .state;
+      CellState state = _board.getCell(i).state;
       if (state == CellState.DEAD && nNeighboursAlive == 3) {
         int dominantPlayer = _computeDominantPlayer(neighbours);
         result.getCell(i).revive(dominantPlayer);
@@ -244,19 +233,23 @@ class Game {
   }
 
   int _computeDominantPlayer(List<Cell> neighbours) {
-    List<List<int>> playerCount = List.generate(_numberOfPlayers, (playerID) => [playerID, 0]);
+    List<List<int>> playerCount =
+        List.generate(_numberOfPlayers, (playerID) => [playerID, 0]);
     neighbours.forEach((cell) {
-      if(cell.playerID != null) {
+      if (cell.playerID != null) {
         playerCount[cell.playerID][1]++;
       }
     });
-    playerCount.sort((a, b) { return a[1] - b[1]; });
+    playerCount.sort((a, b) {
+      return a[1] - b[1];
+    });
     int maxCount = playerCount[_numberOfPlayers - 1][1];
-    while(playerCount[0][1] < maxCount) {
+    while (playerCount[0][1] < maxCount) {
       playerCount = playerCount.sublist(1);
     }
-    List<int> dominantPlayers = List.generate(playerCount.length, (i) => playerCount[i][0]);
-    if(dominantPlayers.length == 1) {
+    List<int> dominantPlayers =
+        List.generate(playerCount.length, (i) => playerCount[i][0]);
+    if (dominantPlayers.length == 1) {
       return dominantPlayers[0];
     } else {
       if (dominantPlayers.contains(_currentPlayerId)) {
@@ -270,7 +263,7 @@ class Game {
 
   _checkGameOver() {
     List<Cell> livingCells = _board.getLivingCells();
-    if(livingCells.isEmpty) {
+    if (livingCells.isEmpty) {
       _gameOver = true;
     } else {
       if (numberOfPlayers == 1) {
@@ -303,8 +296,9 @@ class Game {
   }
 
   @override
-  bool operator ==(other) {
-    return this.board == other.board &&
+  bool operator ==(Object other) {
+    return other is Game &&
+        this.board == other.board &&
         this.numberOfPlayers == other.numberOfPlayers &&
         this.currentPlayerId == other.currentPlayerId &&
         this.toggledCellId == other.toggledCellId &&

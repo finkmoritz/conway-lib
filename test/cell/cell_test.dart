@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
 
-  Cell _cell;
+  late Cell _cell;
 
   group('Test Cells in state VOID', () {
     setUp(() async {

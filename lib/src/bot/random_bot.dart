@@ -8,7 +8,7 @@ import 'bot.dart';
  */
 class RandomBot extends Bot {
 
-  Random _rng;
+  late Random _rng;
 
   RandomBot(Game game) : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);

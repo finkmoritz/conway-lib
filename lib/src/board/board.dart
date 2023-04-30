@@ -8,7 +8,7 @@ class Board {
 
   final int _width;
   final int _height;
-  List<Cell> _cells;
+  late List<Cell> _cells;
 
   Board(this._width, this._height) {
     _cells = new List.generate(_width * _height, (i) => new Cell.Void());
@@ -46,7 +46,7 @@ class Board {
     [-1, 0, 1].forEach((dy) {
       [-1, 0, 1].forEach((dx) {
         if (dx != 0 || dy != 0) {
-          int i = getNeighbourIndex(index, dx, dy);
+          int? i = getNeighbourIndex(index, dx, dy);
           if (i != null) {
             neighbourIndices.add(i);
           }
@@ -56,16 +56,16 @@ class Board {
     return neighbourIndices;
   }
 
-  Cell getNeighbour(int index, int dx, int dy) {
-    int i = getNeighbourIndex(index, dx, dy);
+  Cell? getNeighbour(int index, int dx, int dy) {
+    int? i = getNeighbourIndex(index, dx, dy);
     return i == null ? null : getCell(i);
   }
 
-  int getNeighbourIndex(int index, int dx, int dy) {
-    int x = index % width + dx;
+  int? getNeighbourIndex(int index, int dx, int dy) {
+    int x = index % width + dx as int;
     int y = (index / width + dy).floor();
     if (x >= 0 && x < width && y >= 0 && y < height) {
-      return y * width + x;
+      return y * width + x as int;
     }
     return null;
   }
@@ -79,7 +79,10 @@ class Board {
   }
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
+    if(!(other is Board)) {
+      return false;
+    }
     if(this.width != other.width || this.height != other.height) {
       return false;
     }

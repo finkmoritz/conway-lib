@@ -13,8 +13,8 @@ import 'mcts_node.dart';
  */
 class MctsBot extends Bot {
 
-  Random _rng;
-  MctsNode rootNode;
+  late Random _rng;
+  late MctsNode rootNode;
 
   MctsBot(Game game) : super(game) {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
@@ -26,7 +26,7 @@ class MctsBot extends Bot {
    * the highest number of visits is chosen to be the best move.
    */
   @override
-  int play({int maxNumberOfIterations = 10000, Duration maxDuration}) {
+  int play({int maxNumberOfIterations = 10000, Duration? maxDuration}) {
     iterate(
         maxNumberOfIterations: maxNumberOfIterations, maxDuration: maxDuration);
     int move = getRankedMoves()[0];
@@ -44,7 +44,7 @@ class MctsBot extends Bot {
    */
   void iterate(
       {int maxNumberOfIterations = 1000,
-      Duration maxDuration,
+      Duration? maxDuration,
       bool reset = true}) {
     DateTime endTime = DateTime.now().add(maxDuration ?? Duration(days: 999));
     if (reset) {
@@ -81,7 +81,7 @@ class MctsBot extends Bot {
   @override
   List<int> getRankedMoves() {
     return getRankedNodes()
-        .map((node) => node.toggledCellID)
+        .map((node) => node.toggledCellID!)
         .toList();
   }
 
@@ -155,7 +155,7 @@ class MctsBot extends Bot {
   Game _computeGameAfterPath(List<MctsNode> path) {
     Game gameClone = game.clone();
     for(int i=1; i<path.length; i++) {
-      int move = path[i].toggledCellID;
+      int move = path[i].toggledCellID!;
       gameClone.toggleCell(move);
       gameClone.endTurn();
     }
@@ -178,7 +178,7 @@ class MctsBot extends Bot {
   double _playout(MctsNode node, Game gameAtParent) {
     Game g = gameAtParent.clone();
     //Bring the game to the node's state:
-    g.toggleCell(node.toggledCellID);
+    g.toggleCell(node.toggledCellID!);
     g.endTurn();
     return _getScore(g);
   }
@@ -191,7 +191,7 @@ class MctsBot extends Bot {
     while (currentNode != rootNode) {
       currentNode.nVisits++;
       currentNode.score += score;
-      currentNode = currentNode.parentNode;
+      currentNode = currentNode.parentNode!;
     }
     rootNode.nVisits++;
   }

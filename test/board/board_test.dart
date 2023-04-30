@@ -7,8 +7,8 @@ void main() {
 
   int _width = 3;
   int _height = 4;
-  Board _board;
-  Cell _cell;
+  late Board _board;
+  late Cell _cell;
 
   group('Test Board constructor', () {
     setUp(() async {
