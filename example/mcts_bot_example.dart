@@ -1,4 +1,4 @@
-import 'package:conway/conway.dart';
+import 'package:conway_lib/conway.dart';
 
 void main() {
   Game game = new RandomGame(numberOfPlayers: 2, width: 4,

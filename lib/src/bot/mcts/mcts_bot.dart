@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:conway/conway.dart';
+import 'package:conway_lib/conway.dart';
 
 import '../../game/game.dart';
 import '../bot.dart';

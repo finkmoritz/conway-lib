@@ -1,5 +1,5 @@
-import 'package:conway/conway.dart';
-import 'package:conway/src/bot/mcts/mcts_node.dart';
+import 'package:conway_lib/conway.dart';
+import 'package:conway_lib/src/bot/mcts/mcts_node.dart';
 
 void main() {
   Game game = new RandomGame(numberOfPlayers: 2, width: 5,

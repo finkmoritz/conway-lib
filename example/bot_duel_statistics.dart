@@ -1,5 +1,5 @@
-import 'package:conway/conway.dart';
-import 'package:conway/src/bot/simple_bot.dart';
+import 'package:conway_lib/conway.dart';
+import 'package:conway_lib/src/bot/simple_bot.dart';
 
 void main() {
   int mctsWins = 0;

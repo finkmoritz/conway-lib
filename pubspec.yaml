@@ -1,5 +1,5 @@
-name: conway
-version: 2.0.0
+name: conway_lib
+version: 3.0.0
 description: >-
   Library that simulates Conway's Game of Life with multiple players.
   The last player with living cells wins the game.

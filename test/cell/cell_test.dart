@@ -1,4 +1,4 @@
-import 'package:conway/conway.dart';
+import 'package:conway_lib/conway.dart';
 import 'package:test/test.dart';
 
 void main() {

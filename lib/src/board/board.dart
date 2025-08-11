@@ -110,13 +110,13 @@ class Board {
         Cell cell = _cells[y * _width + x];
         switch(cell.state) {
           case CellState.ALIVE:
-            s += '${cell.playerID}\t';
+            s += '${cell.playerID}';
             break;
           case CellState.DEAD:
-            s += 'x\t';
+            s += 'x';
             break;
           default:
-            s += ' \t';
+            s += ' ';
             break;
         }
       }

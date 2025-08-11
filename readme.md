@@ -13,7 +13,7 @@ Install the [Dart SDK](https://dart.dev/get-dart).
 `dart example/conway_example.dart`
 
 ### Run Tests
-`pub run test test/`
+`dart run test test/`
 
 ## Releases
 
