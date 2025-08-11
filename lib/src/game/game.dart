@@ -29,48 +29,48 @@ class Game {
     _rng = new Random(DateTime.now().millisecondsSinceEpoch);
   }
 
-  get board => _board;
+  Board get board => _board;
 
-  get numberOfPlayers => _numberOfPlayers;
+  int get numberOfPlayers => _numberOfPlayers;
 
   /**
    * Returns the ID of the current Player.
    */
-  get currentPlayerId => _currentPlayerId;
+  int get currentPlayerId => _currentPlayerId;
 
   /**
    * Return the ID of the currently toggled cell.
    * Returns null if no cell is toggled.
    */
-  get toggledCellId => _toggledCellId;
+  int? get toggledCellId => _toggledCellId;
 
   /**
    * Returns the ID of the cell that has been toggled during the last turn.
    */
-  get lastToggledCellId => _lastToggledCellId;
+  int? get lastToggledCellId => _lastToggledCellId;
 
   /**
    * Returns true if and only if at most one PLayer's Cells survived.
    */
-  get gameOver => _gameOver;
+  bool get gameOver => _gameOver;
 
   /**
    * Returns the winning Player's ID if and only if gameOver is true and
    * only one Player's Cells survived.
    */
-  get winner => _winner;
+  int? get winner => _winner;
 
   /**
    * Returns the current round number (starting at 1).
    * This number is increased at the beginning of each new round of the game.
    */
-  get round => _round;
+  int get round => _round;
 
   /**
    * Returns the number of rounds before the sudden death mechanism is triggered
    * or null if no sudden death was configured.
    */
-  get roundsBeforeSuddenDeath => _roundsBeforeSuddenDeath;
+  int? get roundsBeforeSuddenDeath => _roundsBeforeSuddenDeath;
 
   /**
    * toggleCell is the only move in a Conway Game.
@@ -111,7 +111,7 @@ class Game {
    * see toggleCell method.
    */
   toggleCellByCoordinates(int x, int y) {
-    toggleCell(y * _board.width + x as int);
+    toggleCell(y * _board.width + x);
   }
 
   /**
@@ -237,7 +237,7 @@ class Game {
         List.generate(_numberOfPlayers, (playerID) => [playerID, 0]);
     neighbours.forEach((cell) {
       if (cell.playerID != null) {
-        playerCount[cell.playerID][1]++;
+        playerCount[cell.playerID!][1]++;
       }
     });
     playerCount.sort((a, b) {
@@ -269,7 +269,7 @@ class Game {
       if (numberOfPlayers == 1) {
         return;
       }
-      int livingPlayer = livingCells[0].playerID;
+      int livingPlayer = livingCells[0].playerID!;
       for (int i = 1; i < livingCells.length; i++) {
         if (livingCells[i].playerID != livingPlayer) {
           return;

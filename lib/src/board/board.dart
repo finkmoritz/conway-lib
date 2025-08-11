@@ -14,9 +14,9 @@ class Board {
     _cells = new List.generate(_width * _height, (i) => new Cell.Void());
   }
 
-  get width => _width;
-  get height => _height;
-  get numberOfCells => _width * _height;
+  int get width => _width;
+  int get height => _height;
+  int get numberOfCells => _width * _height;
 
   getCell(int i) => _cells[i];
   getCellByCoordinates(int x, int y) => _cells[y * _width + x];
@@ -62,10 +62,10 @@ class Board {
   }
 
   int? getNeighbourIndex(int index, int dx, int dy) {
-    int x = index % width + dx as int;
+    int x = index % width + dx;
     int y = (index / width + dy).floor();
     if (x >= 0 && x < width && y >= 0 && y < height) {
-      return y * width + x as int;
+      return y * width + x;
     }
     return null;
   }

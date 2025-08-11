@@ -22,9 +22,9 @@ class Cell {
     _state = CellState.DEAD;
   }
 
-  get state => _state;
+  CellState get state => _state;
 
-  get playerID => _playerID;
+  int? get playerID => _playerID;
 
   revive(int playerID) {
     switch (_state) {
